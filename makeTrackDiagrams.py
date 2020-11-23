@@ -15,8 +15,8 @@ ROOT.gStyle.SetOptStat(0);
 ROOT.gStyle.SetPadBottomMargin(0.15)
 ROOT.gStyle.SetPadLeftMargin(0.16)
 
-xDipoleWidth  = 330
-yDipoleHeight = 108
+xDipoleWidth  = 330.0
+yDipoleHeight = 108.0
 zDipoleExit   = 2748.0
 
 ### read the data from Sasha's spreadhseet (need to convert to xlsx!)
@@ -136,7 +136,7 @@ def GetExtendedTrackLine(rlist,color=ROOT.kOrange):
    x = xofz(rlist[1],rlist[0],zDipoleExit)
    y = yofz(rlist[1],rlist[0],zDipoleExit)
    rDipoleExit = [x,y,zDipoleExit]
-   rlistextended = [rlist[0], rDipoleExit]
+   rlistextended = [rlist[1], rDipoleExit]
    for i in range(n): track.SetPoint(i,rlistextended[i][0],rlistextended[i][1],rlistextended[i][2])
    return track
 
@@ -165,7 +165,7 @@ def main():
     # xdummy += GetSensorSize(1000,0,"x")/4
     # ydummy += GetSensorSize(1000,0,"y")/4
     #rlist = [ [xdummy,ydummy,z1inner], [xdummy,ydummy,z4inner] ]
-    rlist  = [[282.854, -5.89221,z1inner],[228.504, 6.823,z4inner],[224.264, 7.22941, z1inner],[196.20,-0.877426, z4inner]]
+    rlist  = [[464.685, -2.89186,z1inner],[549.413, -0.553007,z4inner]]
     trkpoints = GetTrackPoints(rlist)
     trackline = GetTrackLine(rlist)
     extendedline = GetExtendedTrackLine(rlist)
@@ -184,9 +184,10 @@ def main():
     view.ShowAxis()
     for sensor in sensors: sensor.Draw()
     dipole.Draw()
+    extendedline.Draw()
     trackline.Draw()
     trkpoints.Draw()
-    extendedline.Draw()
+    
     cnv.SaveAs("sensors.pdf")
     cnv.SaveAs("sensors.root")
 
