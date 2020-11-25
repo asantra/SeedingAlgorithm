@@ -19,6 +19,7 @@ xDipoleWidth  = 330.0
 yDipoleHeight = 108.0
 zDipoleExit   = 2748.0
 
+
 ### read the data from Sasha's spreadhseet (need to convert to xlsx!)
 xl = pd.ExcelFile("luxe_tracker_sensor_position.xlsx")
 print(xl.sheet_names)
@@ -68,6 +69,20 @@ def GetLayerZ(detid,layerid):
    # print("row=",row)
    z = row["translation_z"].tolist()[0]
    return z
+
+
+### get the z of the layers, global variables, can be used by other codes
+z1inner = GetLayerZ(1000,0)
+z2inner = GetLayerZ(1000,2)
+z3inner = GetLayerZ(1000,4)
+z4inner = GetLayerZ(1000,6)
+z1outer = GetLayerZ(1000,1)
+z2outer = GetLayerZ(1000,3)
+z3outer = GetLayerZ(1000,5)
+z4outer = GetLayerZ(1000,7)
+
+
+
    
 def GetSensorXY(detid,layerid):
    row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
@@ -91,6 +106,24 @@ def GetDipole(color=ROOT.kBlack):
    dipole.SetLineColor(color)
    return dipole
 
+### get the x,y position and x,y size of staves
+def GetSensorSize(detid, layerid):
+   row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
+   # print("row=",row)
+   x = row["translation_x"].tolist()[0]
+   y = row["translation_y"].tolist()[0]
+   z = row["translation_z"].tolist()[0]
+   xsize = row["size_x"].tolist()[0]
+   ysize = row["size_y"].tolist()[0]
+   return x, y, xsize, ysize
+
+
+### global variable, can be called by other functions
+xInnerStaveLastChip,  yInnerStaveLastChip,  xSizeInnerStaveLastChip,  ySizeInnerStaveLastChip  = GetSensorSize(1008, 0)
+xOuterStaveFirstChip, yOuterStaveFirstChip, xSizeOuterStaveFirstChip, ySizeOuterStaveFirstChip = GetSensorSize(1000, 7)
+
+
+    
 def GetSensor(detid,layerid,color=ROOT.kGreen+2):
    # print("looking for detid="+str(detid)+" and layerid="+str(layerid))
    row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
@@ -146,16 +179,7 @@ def GetExtendedTrackLine(rlist,color=ROOT.kOrange):
 ##############################################################################
 
 def main():
-    ### get the z of the layers
-    z1inner = GetLayerZ(1000,0)
-    z2inner = GetLayerZ(1000,2)
-    z3inner = GetLayerZ(1000,4)
-    z4inner = GetLayerZ(1000,6)
-    z1outer = GetLayerZ(1000,1)
-    z2outer = GetLayerZ(1000,3)
-    z3outer = GetLayerZ(1000,5)
-    z4outer = GetLayerZ(1000,7)
-
+    
 
     ### get the dipole
     dipole = GetDipole()
