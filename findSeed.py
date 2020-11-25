@@ -236,8 +236,7 @@ def main():
     ### open the file containing track file
     inTextFile      = args.inFile
     inputTrackInfo  = open(inTextFile)
-    energyCut       = args.eCut
-    energyCutSuffix = str(energyCut)+"KeVCut"
+    energyCutSuffix = str(args.eCut)+"KeVCut"
     
     signalCutSuffix = ""
     if(args.needSignal):
@@ -287,7 +286,9 @@ def main():
         if(pdgId==22): continue
         ### if needed, select only the signal  
         if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
-        position.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
+        ### if there is an energy cut
+        if(float(eachWord[6]) > args.eCut*1e-6):
+            position.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
 
     
     for bxCounter in range(1, nBX+1):
