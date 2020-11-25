@@ -272,37 +272,64 @@ def main():
         nBX          = 1
         checkBXMatch = False
        
-    # all the track info is in the following list
-    position = []
-    # get the information from the text files
-    for lines in inputTrackInfo.readlines():
-        lines = lines.rstrip()
-        eachWord = lines.split()
-        bxNumber = int(eachWord[0])
-        trackId  = int(eachWord[2])
-        pdgId    = int(eachWord[1])
-        ### here the preliminary selection of tracks can be done based on trackid and pdgid
-        ### do not want photons, as they will not leave track
-        if(pdgId==22): continue
-        ### if needed, select only the signal  
-        if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
-        ### if there is an energy cut
-        if(float(eachWord[6]) > args.eCut*1e-6):
-            position.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
+    ## all the track info is in the following list
+    #position = []
+    ## get the information from the text files
+    #for lines in inputTrackInfo.readlines():
+        #lines    = lines.rstrip()
+        #eachWord = lines.split()
+        #bxNumber = int(eachWord[0])
+        #trackId  = int(eachWord[2])
+        #pdgId    = int(eachWord[1])
+        #### here the preliminary selection of tracks can be done based on trackid and pdgid
+        #### do not want photons, as they will not leave track
+        #if(pdgId==22): continue
+        #### if needed, select only the signal  
+        #if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
+        #### if there is an energy cut
+        #if(float(eachWord[6]) > args.eCut*1e-6):
+            #position.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
 
     
     for bxCounter in range(1, nBX+1):
         # separate each bx now
         eachBXValue = []
-        for tracks in position:
-            ### the below is needed for e+laser hics setup
-            if (not checkBXMatch):
-                eachBXValue.append(tracks)
-            elif(checkBXMatch and (bxCounter == tracks[0])):
-                eachBXValue.append(tracks)
-            else:
-                continue
-
+        if(not checkBXMatch):
+            inputTrackInfo.seek(0)
+            for lines in inputTrackInfo.readlines():
+                lines    = lines.rstrip()
+                eachWord = lines.split()
+                bxNumber = int(eachWord[0])
+                trackId  = int(eachWord[2])
+                pdgId    = int(eachWord[1])
+                ### here the preliminary selection of tracks can be done based on trackid and pdgid
+                ### do not want photons, as they will not leave track
+                if(pdgId==22): continue
+                ### if needed, select only the signal  
+                if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
+                ### if there is an energy cut
+                if(float(eachWord[6]) > args.eCut*1e-6):
+                    eachBXValue.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
+        
+        else:
+            inputTrackInfo.seek(0)
+            for lines in inputTrackInfo.readlines():
+                lines    = lines.rstrip()
+                eachWord = lines.split()
+                bxNumber = int(eachWord[0])
+                if(bxCounter!=bxNumber): continue
+                trackId  = int(eachWord[2])
+                pdgId    = int(eachWord[1])
+                ### here the preliminary selection of tracks can be done based on trackid and pdgid
+                ### do not want photons, as they will not leave track
+                if(pdgId==22): continue
+                ### if needed, select only the signal  
+                if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
+                ### if there is an energy cut
+                if(float(eachWord[6]) > args.eCut*1e-6):
+                    eachBXValue.append([bxNumber, trackId, int(eachWord[3])-1000, float(eachWord[4]), float(eachWord[5]), float(eachWord[6]), float(eachWord[7])])
+                    
+                    
         #pprint.pprint(eachBXValue)
         ### fill up the x,y, z and E values from each of the tracker layers
         allR1Inner = []; allR2Inner = []; allR3Inner = []; allR4Inner = []
