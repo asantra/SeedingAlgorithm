@@ -19,6 +19,8 @@ xDipoleWidth  = 330.0
 yDipoleHeight = 108.0
 zDipoleExit   = 2748.0
 
+xBoundaries = {}
+
 
 ### read the data from Sasha's spreadhseet (need to convert to xlsx!)
 xl = pd.ExcelFile("luxe_tracker_sensor_position.xlsx")
@@ -148,6 +150,19 @@ def GetSensor(detid,layerid,color=ROOT.kGreen+2):
    sensor.SetLineColor(color)
    return sensor
 
+
+def GetSensorXBoundaries(detid,layerid):
+   # print("looking for detid="+str(detid)+" and layerid="+str(layerid))
+   row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
+   # print("row=",row)
+   x = row["translation_x"].tolist()[0]
+   y = row["translation_y"].tolist()[0]
+   z = row["translation_z"].tolist()[0]
+   xsize = row["size_x"].tolist()[0]
+   ysize = row["size_y"].tolist()[0]
+   xhalf = xsize/2
+   return x-xhalf, x+xhalf
+
 def GetTrackLine(rlist,color=ROOT.kRed):
    n = len(rlist)
    track = TPolyLine3D(n+1)
@@ -184,11 +199,7 @@ def main():
     ### get the dipole
     dipole = GetDipole()
 
-    ### get a dummy track
-    xdummy,ydummy = GetSensorXY(1000,0)
-    # xdummy += GetSensorSize(1000,0,"x")/4
-    # ydummy += GetSensorSize(1000,0,"y")/4
-    #rlist = [ [xdummy,ydummy,z1inner], [xdummy,ydummy,z4inner] ]
+    
     rlist  = [[464.685, -2.89186,z1inner],[549.413, -0.553007,z4inner]]
     trkpoints = GetTrackPoints(rlist)
     trackline = GetTrackLine(rlist)
@@ -196,11 +207,13 @@ def main():
 
     ### get the sensors
     sensors = []
+    
     for index, row in df.iterrows():
         detid   = row["detid"]
         layerid = row["layerid"]
         sensors.append( GetSensor(detid,layerid) )
 
+    print(xBoundaries)
     ### draw
     cnv = TCanvas("cnv","",500,500)
     view = TView.CreateView(1)

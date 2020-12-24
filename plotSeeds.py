@@ -7,23 +7,20 @@ from Functions import *
 import pprint
 
 
-signalAndBackground50KeVFile = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfo_SignalAndBackground_50KeVCut.root", "READ")
+signalAndBackground50KeVFile = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide.root", "READ")
 
-signalAndBackground0KeVFile = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfo_SignalAndBackground_0KeVCut.root", "READ")
+signal0KeVFile = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfoClean_VariableEnergyCut_OnlySignal_PositronSide.root", "READ")
 
-signal0KeVFile = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfo_Signal_0KeVCut.root", "READ")
-
-signalMultiplicity = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfoClean.root","READ")
+signalMultiplicity = TFile("seedingInformation_hics_165gev_w0_3000nm_WIS_trackInfoClean_VariableEnergyCut_OnlySignal_PositronSide.root","READ")
 
 
 hSeedMultiplicity_signalAndBackground50KeV = signalAndBackground50KeVFile.Get("hSeedMultiplicity")
-hSeedMultiplicity_signalAndBackground0KeV  = signalAndBackground0KeVFile.Get("hSeedMultiplicity")
 hSeedMultiplicity_signal0KeV               = signal0KeVFile.Get("hSeedMultiplicity")
 hSignalMultiplicity                        = signalMultiplicity.Get("hSignalMultiplicity")
 
 
 
-FirstTH1 = [hSignalMultiplicity, hSeedMultiplicity_signalAndBackground0KeV, hSeedMultiplicity_signal0KeV]
+FirstTH1 = [hSignalMultiplicity, hSeedMultiplicity_signalAndBackground50KeV, hSeedMultiplicity_signal0KeV]
 
 PlotColor = [kGray, 2, 4]
 LegendName = ['true signal','seeds from sig+bkg', 'seeds from sig']
@@ -52,4 +49,4 @@ drawPattern = ""
 logz        = False
 logx        = False
 
-DrawHists(FirstTH1, LegendName, PlotColor,xAxisName, yAxisName, xrange1down, xrange1up, yrange1down, yrange1up, "seedMultiplicityNew", yline1low, yline1up, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, drawPattern, logz, logx)
+DrawHists(FirstTH1, LegendName, PlotColor,xAxisName, yAxisName, xrange1down, xrange1up, yrange1down, yrange1up, "seedMultiplicityVariableECut", yline1low, yline1up, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, drawPattern, logz, logx)
