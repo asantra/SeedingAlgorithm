@@ -22,15 +22,15 @@ from makeTrackDiagrams import *
 EseedMin = 0.5 # GeV
 EseedMax = 17.5 # GeV
 
-### length of the dipole in meters
-LB       = 1.029
+
+
+
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
 meGeV    = meMeV/1000.
 ### me^2 in GeV
 meGeV2   = meGeV*meGeV
-### 1 Tesla magnetic field used for now
-B        = 1.0
+
 zPositionListInner = [z2inner, z3inner]
 zPositionListOuter = [z2outer, z3outer]
 ddList = []
@@ -49,7 +49,8 @@ cutFlowDict = OrderedDict(
      ('xDipoleExitLt0',0), 
      ('trackEnergy', 0),
      ('checkClusterTracksMiddleLayers', 0),
-     ('checkClusterFit', 0)]
+     ('checkClusterFit', 0),
+     ('checkClusterXDistance', 0)]
     )
 
 ### read the dEdX vs E curve for the electron
@@ -59,6 +60,9 @@ for eachRow in results:
     xdEdX.append(float(eachRow[0]))
     ydEdX.append(float(eachRow[1]))
     
+    
+    
+
 ### This is to find the dEdx
 def getdEdX(energy):
     ### the dEdX vs E curve, x axis energy is in MeV, dEdX in y is in keV/um, remember the unit difference
@@ -106,7 +110,46 @@ def energyAbsorbed(staveId, energy, vtxZ):
     
     
         
-    
+  
+def getR(p):
+   R = p/(0.3*B)
+   return R
+
+def getR2(p):
+   R = getR(p)
+   return R*R
+
+def getXTangent(ZT,p):
+   R2 = getR2(p)
+   XT = (R2/LB-ZT)*(LB/math.sqrt(R2-LB2))
+   return XT
+
+def getx(ZT,p):
+   XT = getXTangent(ZT,p)
+   R = getR(p)
+   x = R-XT
+   return x
+
+def getR1R2(p1, p2):
+    r1    = [getx(Z0,p1), getx(Z4,p1)]
+    r2    = [getx(Z0,p2), getx(Z4, p2)]
+    #print("r1: ",r1, " r2: ",r2)
+    #quit()
+    return r1, r2
+
+def Distance(x0Test,x4Test,r1,r2):
+   ### general straight line equation
+   # a*x0 + b*x4 + c = 0 --> (a/b)*x0 + x4 + (c/b) = 0
+   # (a/b)*r1[0] + r1[1] + (c/b) = 0
+   # (a/b)*r2[0] + r2[1] + (c/b) = 0  -->  (a/b)*(r1[0]-r2[0]) + (r1[1]-r2[1]) = 0 --> a/b = -(r1[1]-r2[1])/(r1[0]-r2[0])
+   # -(r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] + r1[1] + (c/b) = 0 --> c/b = (r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] - r1[1]
+   aOb = -(r1[1]-r2[1])/(r1[0]-r2[0])
+   cOb = (r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] - r1[1]
+   ### now find the distance
+   # d = |a*x0Test + b*x4Test + c|/sqrt(a^2 + b^2) --> d = |(a/b)*x0Test + x4Test + (c/b)|/sqrt((a/b)^2 + 1^2)
+   d = abs(aOb*x0Test + x4Test + (cOb))/math.sqrt(aOb*aOb + 1)
+   return d
+
     
     
 # get the unit vector along one vector
@@ -521,6 +564,8 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
     else:
         return nMatched, nExpected, [], [], [], []
         
+        
+        
 def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching):
     ### now check if the SVD match works
     allDDList = {'dd':[], 'linepts':[], 'i2Inner':[], 'i2Outer':[], 'i3Inner':[], 'i3Outer':[]}
@@ -765,13 +810,13 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                 iWinner  = i
     
     if iWinner >= 0:
-        return True, {"ddValue1":ddValue1, "ddValue2": ddValue2, "linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner]}
+        return True, {"ddValue1":ddValue1, "ddValue2": ddValue2, "linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner], 'nMatched':nMatched, 'nExpected':nExpected}
     else:
         return False, {}
 
 
 ### making the seeds from two tracks from innermost layer and outermost layer
-def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
+def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV, r10GeV):
     cutFlowDict['noCut'] += 1
     
     if(abs(r1[0]) >= abs(r4[0])):
@@ -811,8 +856,10 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
     #### find the energy of the tracks
     x0        = 0
     z0        = zofx(r1, r4, x0)
-    xExit     = abs(xofz(r1, r4, zDipoleExit))
-    H         = abs((zDipoleExit-z0))/1000.0 ### converting H from mm to m
+    #xExit     = abs(xofz(r1, r4, zDipoleActiveExit))
+    #H         = abs((zDipoleActiveExit-z0))/1000.0 ### converting H from mm to m
+    xExit     = abs(xofz(r1, r4, zDipoleActiveExit))
+    H         = abs((zDipoleActiveExit-z0))/1000.0 ### converting H from mm to m
     xExitInM  = xExit/1000.0                 ### converting xExit from mm to m
     R         = H*(LB)/xExitInM + xExitInM   ### // This is the radius of curvature for a track
     P         = 0.3*B*R                      ### here B in Tesla and R in m
@@ -852,8 +899,17 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
     cutFlowDict['checkClusterFit'] += 1
     winnerFit.update({"pSeed":p})
     
-    #xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
-    #xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
+    xDipoleFromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], zDipoleExit)*mm2m
+    xLayer4FromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], r4[2])*mm2m
+    d = Distance(xDipoleFromFit,xLayer4FromFit,r1GeV,r10GeV)
+    #print("The cluster x distance: ",d)
+    if(d > 5*mm2m):
+        return False, {}
+    
+    cutFlowDict['checkClusterXDistance'] += 1
+    winnerFit.update({"distance":d})
+    
+    
     
     #if()
 
@@ -921,6 +977,11 @@ def main():
     hXLayer4XDipole     = TH2D("hXLayer4XDipole", "number of signal distribution; x_{Dipole} [mm]; x_{Layer4}",330,0,330,650,0,650)
     hSigEnergy          = TH1D("hSigEnergy", "signal energy; Energy [GeV]; Entries", 200, 0, 20)
     hSeedEnergy         = TH1D("hSeedEnergy", "seed energy; Energy [GeV]; Entries", 200, 0, 20)
+    hSeedEnergyLoose    = TH1D("hSeedEnergyLoose", "seed energy (Loose); Energy [GeV]; Entries", 200, 0, 20)
+    hSeedEnergyTight    = TH1D("hSeedEnergyTight", "seed energy (Tight); Energy [GeV]; Entries", 200, 0, 20)
+    hSeedDistance       = TH1D("hSeedDistance", "seed distance wrt analytical line; d [m]; Entries", 200, 0, 0.005)
+    hSeedDistanceLoose  = TH1D("hSeedDistanceLoose", "seed distance wrt analytical line (loose); d [m]; Entries", 200, 0, 0.005)
+    hSeedDistanceTight  = TH1D("hSeedDistanceTight", "seed distance wrt analytical line (tight); d [m]; Entries", 200, 0, 0.005)
     hSVDValues1         = TH1D("hSVDValues1", "output of SVD[0]; fit quality [0]; Events", 2000, 100, 300)
     hSVDValues2         = TH1D("hSVDValues2", "output of SVD[1]; fit quality [1]; Events", 240, 0, 0.8)
     hSVDValues3         = TH1D("hSVDValues3", "output of SVD[2]; fit quality [2]; Events", 240, 0, 0.8)
@@ -934,6 +995,8 @@ def main():
     else:
         nBX          = 1
         checkBXMatch = False
+        
+    r1GeV, r10GeV = getR1R2(1, 10)
        
     # all the track info is in the following list
     position = []
@@ -1066,15 +1129,25 @@ def main():
         for r4 in allR4Unique[:]:
             for r1 in allR1Unique[:]:
                 #True, {"linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner], "pSeed":p.E()}
-                seed, winnerDict = makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
+                seed, winnerDict = makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV, r10GeV)
                 allCounter += 1
                 if(seed):
                     #print("I found a seed here: ", r1, " and ", r4)
                     hSeedEnergy.Fill(winnerDict["pSeed"].E())
+                    
                     allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
                     xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                     xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                     hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
+                    hSeedDistance.Fill(winnerDict['distance'])
+                    
+                    if(winnerDict['nMatched'] == 4):
+                        hSeedEnergyTight.Fill(winnerDict["pSeed"].E())
+                        hSeedDistanceTight.Fill(winnerDict['distance'])
+                    else:
+                        hSeedEnergyLoose.Fill(winnerDict["pSeed"].E())
+                        hSeedDistanceLoose.Fill(winnerDict['distance'])
+                    
                     counter += 1
                     #allR1Unique.remove(r1)
                     #print(ddList)

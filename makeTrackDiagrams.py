@@ -15,9 +15,31 @@ ROOT.gStyle.SetOptStat(0);
 ROOT.gStyle.SetPadBottomMargin(0.15)
 ROOT.gStyle.SetPadLeftMargin(0.16)
 
+### globals
+m2mm        = 1000
+mm2m        = 1./1000
+
 xDipoleWidth  = 330.0
 yDipoleHeight = 108.0
 zDipoleExit   = 2748.0
+### length of the dipole in meters
+LB       = 1.029
+LD       = 1.396
+zDipoleActiveExit = zDipoleExit - (LD - LB)*m2mm/2
+
+### 1 Tesla magnetic field used for now
+B        = 1.0
+
+
+
+z4          = 4176.5125 ## [mm]
+
+D4          = (z4-zDipoleActiveExit)*mm2m ## [mm]
+LB2         = LB*LB
+
+ZE = LB
+Z0 = (LB+LD)/2
+Z4 = (LB+D4)
 
 xBoundaries = {}
 
