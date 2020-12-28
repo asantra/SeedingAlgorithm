@@ -31,6 +31,10 @@ meGeV    = meMeV/1000.
 ### me^2 in GeV
 meGeV2   = meGeV*meGeV
 
+### the width of the road around the pivot tracks
+yAbsMargins        = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
+xAbsMargins        = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
+
 zPositionListInner = [z2inner, z3inner]
 zPositionListOuter = [z2outer, z3outer]
 ddList = []
@@ -50,7 +54,9 @@ cutFlowDict = OrderedDict(
      ('trackEnergy', 0),
      ('checkClusterTracksMiddleLayers', 0),
      ('checkClusterFit', 0),
-     ('checkClusterXDistance', 0)]
+     ('checkClusterXDistance', 0),
+     ('checkClusterXDistanceLoose', 0),
+     ('checkClusterXDistanceTight', 0)]
     )
 
 ### read the dEdX vs E curve for the electron
@@ -110,26 +116,31 @@ def energyAbsorbed(staveId, energy, vtxZ):
     
     
         
-  
+### functions needed for distance cut from the analytical line in x1 vs x4 plane
+## get R in m given momentum p
 def getR(p):
-   R = p/(0.3*B)
-   return R
+    R = p/(0.3*B)
+    return R
 
+### get R^2 in m^2 given momentum p
 def getR2(p):
-   R = getR(p)
-   return R*R
+    R = getR(p)
+    return R*R
 
+### get the xTangent in m given ZTangent in m and momentum p
 def getXTangent(ZT,p):
-   R2 = getR2(p)
-   XT = (R2/LB-ZT)*(LB/math.sqrt(R2-LB2))
-   return XT
+    R2 = getR2(p)
+    XT = (R2/LB-ZT)*(LB/math.sqrt(R2-LB2))
+    return XT
 
+### get x in Sasha's coordinate in m given zTangent and momentum p
 def getx(ZT,p):
-   XT = getXTangent(ZT,p)
-   R = getR(p)
-   x = R-XT
-   return x
+    XT = getXTangent(ZT,p)
+    R = getR(p)
+    x = R-XT
+    return x
 
+### get r1 and r2 (x,y --> 2 points) given the Z0 and Z4. This is in m
 def getR1R2(p1, p2):
     r1    = [getx(Z0,p1), getx(Z4,p1)]
     r2    = [getx(Z0,p2), getx(Z4, p2)]
@@ -137,18 +148,14 @@ def getR1R2(p1, p2):
     #quit()
     return r1, r2
 
+#### find the distance from the analytical line to the r1 and r2 point in m
 def Distance(x0Test,x4Test,r1,r2):
-   ### general straight line equation
-   # a*x0 + b*x4 + c = 0 --> (a/b)*x0 + x4 + (c/b) = 0
-   # (a/b)*r1[0] + r1[1] + (c/b) = 0
-   # (a/b)*r2[0] + r2[1] + (c/b) = 0  -->  (a/b)*(r1[0]-r2[0]) + (r1[1]-r2[1]) = 0 --> a/b = -(r1[1]-r2[1])/(r1[0]-r2[0])
-   # -(r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] + r1[1] + (c/b) = 0 --> c/b = (r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] - r1[1]
-   aOb = -(r1[1]-r2[1])/(r1[0]-r2[0])
-   cOb = (r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] - r1[1]
-   ### now find the distance
-   # d = |a*x0Test + b*x4Test + c|/sqrt(a^2 + b^2) --> d = |(a/b)*x0Test + x4Test + (c/b)|/sqrt((a/b)^2 + 1^2)
-   d = abs(aOb*x0Test + x4Test + (cOb))/math.sqrt(aOb*aOb + 1)
-   return d
+    aOb = -(r1[1]-r2[1])/(r1[0]-r2[0])
+    cOb = (r1[1]-r2[1])/(r1[0]-r2[0])*r1[0] - r1[1]
+    ### now find the distance
+    # d = |a*x0Test + b*x4Test + c|/sqrt(a^2 + b^2) --> d = |(a/b)*x0Test + x4Test + (c/b)|/sqrt((a/b)^2 + 1^2)
+    d = abs(aOb*x0Test + x4Test + (cOb))/math.sqrt(aOb*aOb + 1)
+    return d
 
     
     
@@ -352,6 +359,7 @@ def seed3dfitSVDWithList(r1,r2Inner, r2Outer, r3Inner, r3Outer, r4):
    return linepts, dd ## dd is a 1D array of the data singular values
 
 
+### draw the SVD fit
 def drawFit(name,linepts,hits):
     g = TGraph2D()
     g.SetMarkerSize(3)
@@ -381,6 +389,7 @@ def drawFit(name,linepts,hits):
     lfit.Draw("same")
     cnv.SaveAs(name)
    
+### get the expected number of hits in the layer 2 and layer 3 of the tracker given the position of the track
 def getExpectedHits(r1, r4):
     expectedHits2Inner = 0
     expectedHits2Outer = 0
@@ -388,33 +397,30 @@ def getExpectedHits(r1, r4):
     expectedHits3Inner = 0
     expectedHits3Outer = 0
     
-    yAbsMargins    = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
-    xAbsMargins    = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
-    
-    r1min          = [r1[0]-xAbsMargins, r1[1]-yAbsMargins, r1[2]]
-    r1max          = [r1[0]+xAbsMargins, r1[1]+yAbsMargins, r1[2]]
-    r4min          = [r4[0]-xAbsMargins, r4[1]-yAbsMargins, r4[2]]
-    r4max          = [r4[0]+xAbsMargins, r4[1]+yAbsMargins, r4[2]]
+    r1min              = [r1[0]-xAbsMargins, r1[1]-yAbsMargins, r1[2]]
+    r1max              = [r1[0]+xAbsMargins, r1[1]+yAbsMargins, r1[2]]
+    r4min              = [r4[0]-xAbsMargins, r4[1]-yAbsMargins, r4[2]]
+    r4max              = [r4[0]+xAbsMargins, r4[1]+yAbsMargins, r4[2]]
     
     # check possible clusters in layer 2, for both inner and outer stave
-    x2minInner = xofz(r1min, r4min, z2inner)
-    x2maxInner = xofz(r1max, r4max, z2inner)
+    x2minInner         = xofz(r1min, r4min, z2inner)
+    x2maxInner         = xofz(r1max, r4max, z2inner)
     
-    x2minOuter = xofz(r1min, r4min, z2outer)
-    x2maxOuter = xofz(r1max, r4max, z2outer)
+    x2minOuter         = xofz(r1min, r4min, z2outer)
+    x2maxOuter         = xofz(r1max, r4max, z2outer)
     
     #/// check possible clusters in layer 3, for both inner and outer stave
-    x3minInner = xofz(r1min, r4min, z3inner)
-    x3maxInner = xofz(r1max, r4max, z3inner)
+    x3minInner         = xofz(r1min, r4min, z3inner)
+    x3maxInner         = xofz(r1max, r4max, z3inner)
 
-    x3minOuter = xofz(r1min, r4min, z3outer)
-    x3maxOuter = xofz(r1max, r4max, z3outer)
+    x3minOuter         = xofz(r1min, r4min, z3outer)
+    x3maxOuter         = xofz(r1max, r4max, z3outer)
     
     
-    x2Inner = xofz(r1, r4, z2inner)
-    x2Outer = xofz(r1, r4, z2outer)
-    x3Inner = xofz(r1, r4, z3inner)
-    x3Outer = xofz(r1, r4, z3outer)
+    x2Inner            = xofz(r1, r4, z2inner)
+    x2Outer            = xofz(r1, r4, z2outer)
+    x3Inner            = xofz(r1, r4, z3inner)
+    x3Outer            = xofz(r1, r4, z3outer)
     
     for chipName, boundaries in xBoundaries.items(): 
         if "layerid2" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
@@ -441,13 +447,11 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
     hitsOnRoad2Outer = 0
     hitsOnRoad3Inner = 0   ### how many tracks accepted in the road along the r1 and r4
     hitsOnRoad3Outer = 0
-    yAbsMargins    = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
-    xAbsMargins    = 0.13 # mm (a "road" of 200 microns around the line between r4 and r1)
     
-    r1min          = [r1[0]-xAbsMargins, r1[1]-yAbsMargins, r1[2]]
-    r1max          = [r1[0]+xAbsMargins, r1[1]+yAbsMargins, r1[2]]
-    r4min          = [r4[0]-xAbsMargins, r4[1]-yAbsMargins, r4[2]]
-    r4max          = [r4[0]+xAbsMargins, r4[1]+yAbsMargins, r4[2]]
+    r1min            = [r1[0]-xAbsMargins, r1[1]-yAbsMargins, r1[2]]
+    r1max            = [r1[0]+xAbsMargins, r1[1]+yAbsMargins, r1[2]]
+    r4min            = [r4[0]-xAbsMargins, r4[1]-yAbsMargins, r4[2]]
+    r4max            = [r4[0]+xAbsMargins, r4[1]+yAbsMargins, r4[2]]
 
 
     # check possible clusters in layer 2, for both inner and outer stave
@@ -482,6 +486,7 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
     ### separate out staves for allR2
     ### only if there is no suitable track from layer 2 inner stave, go to layer 2 outer stave
     #if(not accept2Inner):
+    
     if True:
         for i2 in range(0, len(allR2Outer)):
             ### remember allR2 has x, y, z and E saved in the list
@@ -556,9 +561,12 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
     #if(not (accept2Inner or accept2Outer or accept3Inner or accept3Outer)):
         #return False
     
+    ### find the number of actual matched tracks
     nMatched = (expectedHits2Inner<=hitsOnRoad2Inner)+(expectedHits2Outer<=hitsOnRoad2Outer)+(expectedHits3Inner<=hitsOnRoad3Inner)+(expectedHits3Outer<=hitsOnRoad3Outer)
+    ### find the number of expected tracks
     nExpected = expectedHits2Inner + expectedHits2Outer + expectedHits3Inner + expectedHits3Outer
     
+    ### only if we have hit in one of the two inner layer of the tracker, we select the seed track, otherwise we reject the track
     if(nMatched>=3):
         return nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching
     else:
@@ -566,19 +574,11 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side)
         
         
         
+#### prepare the SVD fit for the seed track
 def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching):
     ### now check if the SVD match works
     allDDList = {'dd':[], 'linepts':[], 'i2Inner':[], 'i2Outer':[], 'i3Inner':[], 'i3Outer':[]}
-    
-    #### if we have 4 hits in 4 layers
-    #name = "SVDFit_nMatched"+str(nMatched)+"_nExpected"+str(nExpected)+".pdf"
-    #cnv = TCanvas("","",2000,2000)
-    #cnv.SaveAs(name+"(")
-    #print("inner r2 length: ", len(innerR2FromMatching))
-    #print("outer r2 length: ", len(outerR2FromMatching))
-    #print("inner r3 length: ", len(innerR3FromMatching))
-    #print("outer r3 length: ", len(outerR3FromMatching))
-    
+    #### number of matches tracks in each of the staves of the layer 2 and layer 3
     n2i = len(innerR2FromMatching)
     n2o = len(outerR2FromMatching)
     n3i = len(innerR3FromMatching)
@@ -795,27 +795,32 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         #allDDList['i3Outer'].append(-1)
                         #allDDList['linepts'].append(lfitpts)
                         
-    
-    ddValue1 = 10e10
-    ddValue2 = 10e10
+    ### start with a very high value, in the end we will take the smallest one
+    ddValue0 = 1e11
+    ddValue1 = 1e11
+    ddValue2 = 1e11
+    ### the index of the best matched track
     iWinner = -1
     #print("ddList:", allDDList)
     for i in range(len(allDDList['dd'])):
         ddValue = allDDList['dd'][i]
         #print("ddValue1", ddValue)
-        if ((0.0 < ddValue[1] < 0.1) and (0 < ddValue[2] < 0.05)):
+        if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.05)):
             if ddValue[1] < ddValue1:
+                ddValue0 = ddValue[0]
                 ddValue1 = ddValue[1] 
                 ddValue2 = ddValue[2]
                 iWinner  = i
     
+    ### only if a good fit is available, return True
     if iWinner >= 0:
-        return True, {"ddValue1":ddValue1, "ddValue2": ddValue2, "linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner], 'nMatched':nMatched, 'nExpected':nExpected}
+        return True, {"ddValue0": ddValue0, "ddValue1":ddValue1, "ddValue2": ddValue2, "linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner]}
     else:
         return False, {}
 
 
-### making the seeds from two tracks from innermost layer and outermost layer
+
+### making the seeds from two tracks from innermost layer and outermost layer, check the seeding cuts in the process
 def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV, r10GeV):
     cutFlowDict['noCut'] += 1
     
@@ -834,7 +839,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     yDipoleExit = yofz(r1, r4, zDipoleExit)
     xDipoleExit = xofz(r1, r4, zDipoleExit)
     ### The following cuts are coming because of the distribution of the signal
-    ### the following cannot be 20mm/2 according to the signal tracks
+    ### the following cannot be 10.8mm/2 according to the signal tracks
     if(abs(yDipoleExit) > 10.8/2):
         return False, {}
     cutFlowDict['yDipoleExitGt15'] += 1
@@ -859,10 +864,10 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     #xExit     = abs(xofz(r1, r4, zDipoleActiveExit))
     #H         = abs((zDipoleActiveExit-z0))/1000.0 ### converting H from mm to m
     xExit     = abs(xofz(r1, r4, zDipoleActiveExit))
-    H         = abs((zDipoleActiveExit-z0))/1000.0 ### converting H from mm to m
-    xExitInM  = xExit/1000.0                 ### converting xExit from mm to m
-    R         = H*(LB)/xExitInM + xExitInM   ### // This is the radius of curvature for a track
-    P         = 0.3*B*R                      ### here B in Tesla and R in m
+    H         = abs((zDipoleActiveExit-z0))*mm2m ### converting H from mm to m
+    xExitInM  = xExit*mm2m                       ### converting xExit from mm to m
+    R         = H*(LB)/xExitInM + xExitInM       ### // This is the radius of curvature for a track
+    P         = 0.3*B*R                          ### here B in Tesla and R in m
     v1        = TVector2(r1[2], r1[1])
     v4        = TVector2(r4[2], r4[1])
     u         = rUnit2(v1, v4)
@@ -888,37 +893,45 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     
     cutFlowDict['checkClusterTracksMiddleLayers'] += 1
     
-    #expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer = getExpectedHits(r1, r4)
     #print("2time:", expectedHits2Inner, expectedHits2Outer,  expectedHits3Inner, expectedHits3Outer)
     
     passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching)
     
-    if(not passFit):
-        return False, {}
+    ### add the nMatched and nExpected to the winnerFit dictionary
+    winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected})
     
+    #if(not passFit):
+        #return False, {}
+    
+    winnerFit.update({'passFit':passFit})
     cutFlowDict['checkClusterFit'] += 1
     winnerFit.update({"pSeed":p})
     
-    xDipoleFromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], zDipoleExit)*mm2m
-    xLayer4FromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], r4[2])*mm2m
-    d = Distance(xDipoleFromFit,xLayer4FromFit,r1GeV,r10GeV)
-    #print("The cluster x distance: ",d)
-    if(d > 5*mm2m):
-        return False, {}
+    ### if fit is done, then take the x and z from the fit
+    if(passFit):
+        xDipoleFromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], zDipoleExit)*mm2m
+        xLayer4FromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], r4[2])*mm2m
+        #### calculate the distance from x4:x_exit analytical line
+        d              = Distance(xDipoleFromFit,xLayer4FromFit,r1GeV,r10GeV)
+        #print("The cluster x distance: ",d)
+        ### d is in m
+        if(d > 5*mm2m):
+            return False, {}
+        
+        cutFlowDict['checkClusterXDistance'] += 1
+        winnerFit.update({"distance":d})
+        if(winnerFit['nMatched'] == 4):
+            cutFlowDict['checkClusterXDistanceTight'] += 1
+        else:
+            cutFlowDict['checkClusterXDistanceLoose'] += 1
     
-    cutFlowDict['checkClusterXDistance'] += 1
-    winnerFit.update({"distance":d})
-    
-    
-    
-    #if()
 
     return True, winnerFit
 
 
 
 
-
+### The main function
 def main():
     # give the input text file containing all the track information
     parser = argparse.ArgumentParser(description='Code to find seed tracks')
@@ -932,7 +945,7 @@ def main():
     for index, row in df.iterrows():
         detid   = row["detid"]
         layerid = row["layerid"]
-        if(layerid>7):
+        if(layerid > 7):
             continue
         xMin, xMax = GetSensorXBoundaries(detid, layerid)
         xBoundaries.update({"detid"+str(detid)+"_layerid"+str(layerid):[xMin, xMax]})
@@ -982,20 +995,27 @@ def main():
     hSeedDistance       = TH1D("hSeedDistance", "seed distance wrt analytical line; d [m]; Entries", 200, 0, 0.005)
     hSeedDistanceLoose  = TH1D("hSeedDistanceLoose", "seed distance wrt analytical line (loose); d [m]; Entries", 200, 0, 0.005)
     hSeedDistanceTight  = TH1D("hSeedDistanceTight", "seed distance wrt analytical line (tight); d [m]; Entries", 200, 0, 0.005)
-    hSVDValues1         = TH1D("hSVDValues1", "output of SVD[0]; fit quality [0]; Events", 2000, 100, 300)
-    hSVDValues2         = TH1D("hSVDValues2", "output of SVD[1]; fit quality [1]; Events", 240, 0, 0.8)
-    hSVDValues3         = TH1D("hSVDValues3", "output of SVD[2]; fit quality [2]; Events", 240, 0, 0.8)
+    hSVDValues1         = TH1D("hSVDValues1", "output of SVD[0]; fit quality [0]; Events", 50, 200, 250)
+    hSVDValues2         = TH1D("hSVDValues2", "output of SVD[1]; fit quality [1]; Events", 50, 0, 0.1)
+    hSVDValues3         = TH1D("hSVDValues3", "output of SVD[2]; fit quality [2]; Events", 25, 0, 0.01)
+    hSVDValues1Tight    = TH1D("hSVDValues1Tight", "output of SVD[0]; fit quality [0]; Events", 50, 200, 250)
+    hSVDValues2Tight    = TH1D("hSVDValues2Tight", "output of SVD[1], tight; fit quality [1]; Events", 50, 0, 0.1)
+    hSVDValues3Tight    = TH1D("hSVDValues3Tight", "output of SVD[2], tight; fit quality [2]; Events", 25, 0, 0.01)
+    hSVDValues1Loose    = TH1D("hSVDValues1Loose", "output of SVD[0]; fit quality [0]; Events", 50, 200, 250)
+    hSVDValues2Loose    = TH1D("hSVDValues2Loose", "output of SVD[1], loose; fit quality [1]; Events", 50, 0, 0.1)
+    hSVDValues3Loose    = TH1D("hSVDValues3Loose", "output of SVD[2], loose; fit quality [2]; Events", 25, 0, 0.01)
     
     
 
-    #### select the number of bunch crossing for different files, BX is useful only for hics setup
+    #### select the number of bunch crossing for different files, BX is useful only for hics setup, 494 BX for 5000 nm new signal, 9508 BX for 3000 nm old signal
     if 'hics' in inTextFile:
-        nBX          = 100
+        nBX          = 494
         checkBXMatch = True
     else:
         nBX          = 1
         checkBXMatch = False
         
+    ### get the tracks given the momentum, we get 1 GeV and 10 GeV momentum tracks  
     r1GeV, r10GeV = getR1R2(1, 10)
        
     # all the track info is in the following list
@@ -1020,18 +1040,16 @@ def main():
         ### do not want photons, as they will not leave track
         if(pdgId==22): continue
         ### if needed, select only the signal  
-        if(args.needSignal and not(pdgId==-11 and trackId==1)): continue
-        ### if there is an energy cut
-        
+        if(args.needSignal and not(pdgId==-11 and trackId==1)):
+            continue
         ### ask for variable energy cut, energyAfterCut is in keV
         energyAfterCut = energyAbsorbed(staveId, energyVal, vtx_z)
         #if(float(eachWord[6]) > args.eCut*1e-6):
         if(energyAfterCut > 0):
-        #if True:
             #### bxNumber, trackId, staveId, x, y, E, weight
             position.append([bxNumber, trackId, staveId, xPos, yPos, energyVal, weight])
 
-    #pprint.pprint(position)
+    #### run the seeding algorithm per BX
     for bxCounter in range(1, nBX+1):
         # separate each bx now
         eachBXValue = []
@@ -1043,7 +1061,7 @@ def main():
                 eachBXValue.append(tracks)
             else:
                 continue
-
+        
         #pprint.pprint(eachBXValue)
         ### fill up the x,y, z and E values from each of the tracker layers
         allR1Inner = []; allR2Inner = []; allR3Inner = []; allR4Inner = []
@@ -1125,39 +1143,54 @@ def main():
         counter    = 0
         allCounter = 0
         print("For the BX: ", bxCounter," the number of layer 1 tracks: ", len(allR1Unique)," and layer 4 tracks: ", len(allR4Unique))
+        
+        
+        ### don't need to run the seeding algorithm if it is signal
+        if(args.needSignal):
+            print("+++++  actual signals: ", len(allR1Unique), " +++++")
+        
         allSeedsTrackLines = []
         for r4 in allR4Unique[:]:
             for r1 in allR1Unique[:]:
-                #True, {"linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner], "pSeed":p.E()}
+                ### This is the return of makeseed function
+                #True, {"linepts":allDDList['linepts'][iWinner], "r2Inner":allDDList['i2Inner'][iWinner], "r2Outer":allDDList['i2Outer'][iWinner], "r3Inner":allDDList['i3Inner'][iWinner], "r3Outer":allDDList['i3Outer'][iWinner], "pSeed":p.E(), "nMatched": nMatched, "nExpected":nExpected}
+                
                 seed, winnerDict = makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV, r10GeV)
                 allCounter += 1
+                #pprint.pprint(winnerDict)
                 if(seed):
-                    #print("I found a seed here: ", r1, " and ", r4)
+                    ### values which can be obtained even before fitting
                     hSeedEnergy.Fill(winnerDict["pSeed"].E())
-                    
-                    allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
-                    xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
-                    xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
-                    hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
-                    hSeedDistance.Fill(winnerDict['distance'])
-                    
                     if(winnerDict['nMatched'] == 4):
                         hSeedEnergyTight.Fill(winnerDict["pSeed"].E())
-                        hSeedDistanceTight.Fill(winnerDict['distance'])
                     else:
                         hSeedEnergyLoose.Fill(winnerDict["pSeed"].E())
-                        hSeedDistanceLoose.Fill(winnerDict['distance'])
                     
-                    counter += 1
-                    #allR1Unique.remove(r1)
-                    #print(ddList)
-                    for ddValue in ddList:
-                        #hSVDValues1.Fill(ddValue[0])
+                    ### values which can be obtained only after fitting
+                    if winnerDict['passFit']:
+                        hSeedDistance.Fill(winnerDict['distance'])
+                        allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
+                        xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
+                        xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
+                        hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
+                        
+                        hSVDValues1.Fill(winnerDict["ddValue0"])
                         hSVDValues2.Fill(winnerDict["ddValue1"])
                         hSVDValues3.Fill(winnerDict["ddValue2"])
-                    #print("svdOutput: ", svdOutput)
-                    ##print(len(svdOutput), " and ", svdOutput[0])
-                    #hSVDValues.Fill(svdOutput)
+                        if(winnerDict['nMatched'] == 4):
+                            hSeedDistanceTight.Fill(winnerDict['distance'])
+                            hSVDValues1Tight.Fill(winnerDict["ddValue0"])
+                            hSVDValues2Tight.Fill(winnerDict["ddValue1"])
+                            hSVDValues3Tight.Fill(winnerDict["ddValue2"])
+                        else:
+                            hSeedDistanceLoose.Fill(winnerDict['distance'])
+                            hSVDValues1Loose.Fill(winnerDict["ddValue0"])
+                            hSVDValues2Loose.Fill(winnerDict["ddValue1"])
+                            hSVDValues3Loose.Fill(winnerDict["ddValue2"])
+                            
+                        
+                    counter += 1
+                    #allR1Unique.remove(r1)
 
         print("Number of seed: ", counter)
         print("Number of combination: ", allCounter)
@@ -1184,6 +1217,7 @@ def main():
     view.SetRange(-600,-500,2500, +600,+500,4500)
     view.ShowAxis()
     dipole.Draw()
+    
     #trackline.Draw()
     #trkpoints.Draw()
     #extendedline.Draw()
@@ -1195,6 +1229,7 @@ def main():
     pprint.pprint(cutFlowDict)
 
 
+#### call the main function
 if __name__ == "__main__":
     start = time.time()
     main()

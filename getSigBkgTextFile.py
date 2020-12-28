@@ -11,15 +11,17 @@ import argparse
 
 
 def main():
-    numberTxtFile = int(sys.argv[1])
+    numberTxtFile      = int(sys.argv[1])
+    signalTracksNumber = int(sys.argv[2])
     bkgFileName   = open("EBeamOnlyWIS_DividedByBX"+str(numberTxtFile)+"_trackInfoClean.txt")
-    #sigFileName   = open("list_root_hics_165gev_w0_5000nm_provisional_10xi3_6cee466a_trackInfoClean.txt")
+    sigFileName   = open("list_root_hics_165gev_w0_5000nm_provisional_10xi3_6cee466a_trackInfoClean.txt")
     #sigFileName   = open("list_root_hics_165gev_w0_8000nm_provisional_10xi3_6cee466a_trackInfoClean.txt")
-    sigFileName   = open("list_root_hics_165gev_w0_3000nm_WIS_trackInfoClean.txt")
+    #sigFileName   = open("list_root_hics_165gev_w0_3000nm_WIS_trackInfoClean.txt")
     
     #outFile       = open("BkgEBeam_SignalHics5000nmProvisional_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
     #outFile       = open("BkgEBeam_SignalHics8000nmProvisional_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
-    outFile       = open("BkgEBeam_SignalHics3000nmOldReverse_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
+    #outFile       = open("BkgEBeam_SignalHics3000nmOldReverse_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
+    outFile       = open("BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(numberTxtFile)+"_SignalTracks"+str(signalTracksNumber)+"_trackInfoClean.txt","w")
     
     ### write the bkg as it is
     for lines in bkgFileName.readlines():
@@ -59,16 +61,21 @@ def main():
         signalNumber[bx] = counter ### store the number of signal for each BX
                 
     ### sort the list according to the number of signals, descending order
-    #sortedSignalNumber = {k: v for k, v in sorted(signalNumber.items(), key=lambda item: item[1], reverse=True)}
+    sortedSignalNumber = {k: v for k, v in sorted(signalNumber.items(), key=lambda item: item[1], reverse=True)}
     ### this is with ascending order
-    sortedSignalNumber = {k: v for k, v in sorted(signalNumber.items(), key=lambda item: item[1])}
+    #sortedSignalNumber = {k: v for k, v in sorted(signalNumber.items(), key=lambda item: item[1])}
     
-    print(sortedSignalNumber)
+    #print(sortedSignalNumber)
     ### write one bx of signal to the output file
     writeNumber = 0
     for key in sortedSignalNumber:
         print(key,sortedSignalNumber[key])
-        writeNumber += 1
+        
+        #### select the number of tracks in each signal BX
+        ##about 1 track, 5 tracks, 10 tracks, 20 tracks , 50 tracks, 100 tracks, 200 tracks, 500 tracks
+        ### give a spread of 5 for each BX for low signal multiplicity
+        if((signalTracksNumber - 5) < sortedSignalNumber[key] < (signalTracksNumber+5)):
+            writeNumber += 1
         signalTrackMultiplicity.Fill(sortedSignalNumber[key])
         if(writeNumber!=numberTxtFile): continue
         print("writing only the ",numberTxtFile," th signal BX")
@@ -77,6 +84,8 @@ def main():
             findTrackId = int(eachLine.split()[2])
             if findPDG == -11 and findTrackId == 1:
                 outFile.write(eachLine+"\n")
+        ### just take the very first BX satisfying the condition
+        break
     
     outFile.close()
     outRootFile.Write()
