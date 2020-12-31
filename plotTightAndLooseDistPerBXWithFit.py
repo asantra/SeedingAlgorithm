@@ -8,8 +8,8 @@ import pprint
 
 
 def main():
-
-    directory = "FitTightAndLoosePlots"
+    gROOT.SetBatch()
+    directory = "FitTightAndLoosePlots_HybridSVDanddCuts_December29_2020"  ## _LooseSVDanddCuts_December29_2020
     if not os.path.exists(directory):
         os.makedirs(directory)
     # give the signal sample you want to use, old with less signal tracks or new with more signal tracks
@@ -254,7 +254,7 @@ def main():
     SecondTH1  = [hSignalEnergyBX1, hSeedEnergy_signalAndBackgroundWithoutFitBX1, hSeedEnergy_signalAndBackgroundBX1]
 
     PlotColor  = [kGray, kBlack, kBlack]
-    LegendName = ['True signal', 'Inclusive+No fit', 'Inclusive+Fit']
+    LegendName = ['True signal', 'Inclusive', 'Inclusive+Fit']
     
     DrawHistsRatioFour(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/energyDistributionSeedAndSignalInclusive_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, h3, yline1low, yline1up, drawline, logy, False, False, latexName, latexName2, latexName3, latexName4, latexName5, h4, h5, energyPlots)
     
@@ -263,7 +263,7 @@ def main():
     SecondTH1 = [hSignalEnergyBX1, hSeedEnergyTight_signalAndBackgroundWithoutFitBX1, hSeedEnergyTight_signalAndBackgroundBX1]
 
     PlotColor = [kGray, 2, 2]
-    LegendName = ['True signal','Tight+No fit', 'Tight+Fit']
+    LegendName = ['True signal','Tight', 'Tight+Fit']
     
     DrawHistsRatioFour(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/energyDistributionSeedAndSignalTight_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, h3, yline1low, yline1up, drawline, logy, False, False, latexName, latexName2, latexName3, latexName4, latexName5, h4, h5, energyPlots)
     
@@ -271,9 +271,13 @@ def main():
     SecondTH1 = [hSignalEnergyBX1, hSeedEnergyLoose_signalAndBackgroundWithoutFitBX1, hSeedEnergyLoose_signalAndBackgroundBX1]
 
     PlotColor = [kGray, 4, 4]
-    LegendName = ['True signal', 'Loose+No fit', 'Loose+Fit']
+    LegendName = ['True signal', 'Loose', 'Loose+Fit']
     
     DrawHistsRatioFour(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/energyDistributionSeedAndSignalLoose_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, h3, yline1low, yline1up, drawline, logy, False, False, latexName, latexName2, latexName3, latexName4, latexName5, h4, h5, energyPlots)
+    
+    
+    
+    
     
     
     
@@ -333,7 +337,7 @@ def main():
     
     FirstTH1   = [hSeedDistanceMatchedBX1, hSeedDistanceTight_signalAndBackgroundBX1, hSeedDistanceLoose_signalAndBackgroundBX1]
     
-    LegendName = ["sig only combination", "sig+bkg, tight", "sig+bkg, loose"]
+    LegendName = ["sig-only seeds", "sig+bkg, tight", "sig+bkg, loose"]
     PlotColor  = [kGray, 2, 4]
     xAxisName  = "Distance from analytical line in the x_{4}:x_{exit} plane [m]"
     yAxisName  = "Entries/BX"
@@ -407,7 +411,7 @@ def main():
     
     FirstTH1   = [hSVDValues1MatchedBX1, hSVDValues1Tight_signalAndBackgroundBX1, hSVDValues1Loose_signalAndBackgroundBX1]
     
-    LegendName = ["sig only combination", "sig+bkg, tight", "sig+bkg, loose"]
+    LegendName = ["sig-only seeds", "sig+bkg, tight", "sig+bkg, loose"]
     PlotColor  = [kGray, 2, 4]
     xAxisName  = "First SVD value"
     yAxisName  = "Entries/BX"
@@ -482,7 +486,7 @@ def main():
     
     FirstTH1   = [hSVDValues2MatchedBX1, hSVDValues2Tight_signalAndBackgroundBX1, hSVDValues2Loose_signalAndBackgroundBX1]
     
-    LegendName = ["sig only combination", "sig+bkg, tight", "sig+bkg, loose"]
+    LegendName = ["sig-only seeds", "sig+bkg, tight", "sig+bkg, loose"]
     PlotColor  = [kGray, 2, 4]
     xAxisName  = "Second SVD value"
     yAxisName  = "Entries/BX"
@@ -561,7 +565,7 @@ def main():
     #c1.SaveAs("test.pdf")
     FirstTH1   = [hSVDValues3MatchedBX1, hSVDValues3Tight_signalAndBackgroundBX1, hSVDValues3Loose_signalAndBackgroundBX1]
     
-    LegendName = ["sig only combination", "sig+bkg, tight", "sig+bkg, loose"]
+    LegendName = ["sig-only seeds", "sig+bkg, tight", "sig+bkg, loose"]
     PlotColor  = [kGray, 2, 4]
     xAxisName  = "Third SVD value"
     yAxisName  = "Entries/BX"
@@ -582,6 +586,127 @@ def main():
     
     
     
+    
+    ##### py
+    
+    ### with fit, distance from signal+background, inclusive
+    hSeedPy_signalAndBackgroundBX1  = signalAndBackgroundBX1.Get("hSeedPy")
+    hSeedPy_signalAndBackgroundBX2  = signalAndBackgroundBX2.Get("hSeedPy")
+    hSeedPy_signalAndBackgroundBX3  = signalAndBackgroundBX3.Get("hSeedPy")
+    hSeedPy_signalAndBackgroundBX4  = signalAndBackgroundBX4.Get("hSeedPy")
+
+    hSeedPy_signalAndBackgroundBX1.Add(hSeedPy_signalAndBackgroundBX2)
+    hSeedPy_signalAndBackgroundBX1.Add(hSeedPy_signalAndBackgroundBX3)
+    hSeedPy_signalAndBackgroundBX1.Add(hSeedPy_signalAndBackgroundBX4)
+    
+    #hSeedPy_signalAndBackgroundBX1.Rebin(4)
+    
+    
+    ### with fit, distance from signal+background, tight
+    hSeedPyTight_signalAndBackgroundBX1  = signalAndBackgroundBX1.Get("hSeedPyTight")
+    hSeedPyTight_signalAndBackgroundBX2  = signalAndBackgroundBX2.Get("hSeedPyTight")
+    hSeedPyTight_signalAndBackgroundBX3  = signalAndBackgroundBX3.Get("hSeedPyTight")
+    hSeedPyTight_signalAndBackgroundBX4  = signalAndBackgroundBX4.Get("hSeedPyTight")
+
+    hSeedPyTight_signalAndBackgroundBX1.Add(hSeedPyTight_signalAndBackgroundBX2)
+    hSeedPyTight_signalAndBackgroundBX1.Add(hSeedPyTight_signalAndBackgroundBX3)
+    hSeedPyTight_signalAndBackgroundBX1.Add(hSeedPyTight_signalAndBackgroundBX4)
+    
+    #hSeedPyTight_signalAndBackgroundBX1.Rebin(4)
+    
+    
+    ### with fit, distance from signal+background, loose
+    hSeedPyLoose_signalAndBackgroundBX1  = signalAndBackgroundBX1.Get("hSeedPyLoose")
+    hSeedPyLoose_signalAndBackgroundBX2  = signalAndBackgroundBX2.Get("hSeedPyLoose")
+    hSeedPyLoose_signalAndBackgroundBX3  = signalAndBackgroundBX3.Get("hSeedPyLoose")
+    hSeedPyLoose_signalAndBackgroundBX4  = signalAndBackgroundBX4.Get("hSeedPyLoose")
+
+    hSeedPyLoose_signalAndBackgroundBX1.Add(hSeedPyLoose_signalAndBackgroundBX2)
+    hSeedPyLoose_signalAndBackgroundBX1.Add(hSeedPyLoose_signalAndBackgroundBX3)
+    hSeedPyLoose_signalAndBackgroundBX1.Add(hSeedPyLoose_signalAndBackgroundBX4)
+    
+    #hSeedPyLoose_signalAndBackgroundBX1.Rebin(4)
+    
+    
+    
+    #### seed energy, matched with signal
+    hSeedPyMatchedBX1                     = signalFromBkgFileBX1.Get("hSeedPy")
+    hSeedPyMatchedBX2                     = signalFromBkgFileBX2.Get("hSeedPy")
+    hSeedPyMatchedBX3                     = signalFromBkgFileBX3.Get("hSeedPy")
+    hSeedPyMatchedBX4                     = signalFromBkgFileBX4.Get("hSeedPy")
+
+    hSeedPyMatchedBX1.Add(hSeedPyMatchedBX2)
+    hSeedPyMatchedBX1.Add(hSeedPyMatchedBX3)
+    hSeedPyMatchedBX1.Add(hSeedPyMatchedBX4)
+    #hSeedPyMatchedBX1.Rebin(4)
+    
+    FirstTH1   = [hSeedPyMatchedBX1, hSeedPyTight_signalAndBackgroundBX1, hSeedPyLoose_signalAndBackgroundBX1]
+    
+    LegendName = ["sig-only seeds", "sig+bkg, tight", "sig+bkg, loose"]
+    PlotColor  = [kGray, 2, 4]
+    xAxisName  = "p_{Y} [GeV]"
+    yAxisName  = "Entries/BX"
+    xrange1down = -0.02
+    xrange1up   = 0.02
+    yrange1down = 1e-1
+    yrange1up   = 1e3
+    logy        = True
+    #### put the x axis label and y axis label
+    for i in xrange(0,len(FirstTH1)):
+        FirstTH1[i].Scale(1./4.0)
+    
+    DrawHists(FirstTH1, LegendName, PlotColor,xAxisName, yAxisName, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/SeedPyDistributionSeedAndSignal_nTracks"+args.nTracks+"_"+plotSuffix, yline1low, yline1up, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, drawPattern, logz, logx, latexName4)
+    
+    
+    
+    
+    
+    
+    ##### py
+    
+    ### with fit, distance from signal+background, inclusive
+    hXExitYExit_signalAndBackgroundBX1  = signalAndBackgroundBX1.Get("hXExitYExit")
+    hXExitYExit_signalAndBackgroundBX2  = signalAndBackgroundBX2.Get("hXExitYExit")
+    hXExitYExit_signalAndBackgroundBX3  = signalAndBackgroundBX3.Get("hXExitYExit")
+    hXExitYExit_signalAndBackgroundBX4  = signalAndBackgroundBX4.Get("hXExitYExit")
+
+    hXExitYExit_signalAndBackgroundBX1.Add(hXExitYExit_signalAndBackgroundBX2)
+    hXExitYExit_signalAndBackgroundBX1.Add(hXExitYExit_signalAndBackgroundBX3)
+    hXExitYExit_signalAndBackgroundBX1.Add(hXExitYExit_signalAndBackgroundBX4)
+    
+    #hXExitYExit_signalAndBackgroundBX1.Rebin(4)
+    
+    
+    
+    
+    
+    #### seed energy, matched with signal
+    hXExitYExitMatchedBX1                     = signalFromBkgFileBX1.Get("hXExitYExit")
+    hXExitYExitMatchedBX2                     = signalFromBkgFileBX2.Get("hXExitYExit")
+    hXExitYExitMatchedBX3                     = signalFromBkgFileBX3.Get("hXExitYExit")
+    hXExitYExitMatchedBX4                     = signalFromBkgFileBX4.Get("hXExitYExit")
+
+    hXExitYExitMatchedBX1.Add(hXExitYExitMatchedBX2)
+    hXExitYExitMatchedBX1.Add(hXExitYExitMatchedBX3)
+    hXExitYExitMatchedBX1.Add(hXExitYExitMatchedBX4)
+    #hXExitYExitMatchedBX1.Rebin(4)
+    
+    FirstTH1   = [hXExitYExit_signalAndBackgroundBX1]
+    
+    LegendName = ["sig-only seeds"]
+    PlotColor  = [kGray]
+    xAxisName  = "x_{Exit} [mm]"
+    yAxisName  = "y_{Exit} [mm]"
+    xrange1down = 0.0
+    xrange1up   = 100.0
+    yrange1down = -5
+    yrange1up   = 5
+    logy        = False
+    #### put the x axis label and y axis label
+    for i in xrange(0,len(FirstTH1)):
+        FirstTH1[i].Scale(1./4.0)
+    
+    DrawHists(FirstTH1, LegendName, PlotColor,xAxisName, yAxisName, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/XExitYExitDistributionSignalAndBackground_nTracks"+args.nTracks+"_"+plotSuffix, yline1low, yline1up, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, "COLZ", logz, logx, latexName4)
     
 
 
