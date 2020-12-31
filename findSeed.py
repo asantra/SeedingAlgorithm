@@ -846,7 +846,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             else:
                 ### energy < 4 GeV
                 if(pSeed.E() < 4.):
-                    if ((0.0 < ddValue[1] < 0.09) and (0.0 < ddValue[2] < 0.09)):
+                    if ((0.0 < ddValue[1] < 0.075) and (0.0 < ddValue[2] < 0.075)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -854,7 +854,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             iWinner  = i
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.07) and (0.0 < ddValue[2] < 0.07)):
+                    if ((0.0 < ddValue[1] < 0.065) and (0.0 < ddValue[2] < 0.065)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
