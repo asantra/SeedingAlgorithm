@@ -31,7 +31,7 @@ PseedMax = 0.005 # GeV
 
 ### cut on nseeds
 nseedsNoFitMax  = 50
-nseedsNoFitMax2 = 450
+nseedsNoFitMax2 = 320
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
@@ -781,7 +781,9 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             
         #if ((0.0 < ddValue[1] < ddValueCut1) and (0.0 < ddValue[2] < 0.01)):
         #if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.05)):
+        ### high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
+            ### energy < 4 GeV
             if pSeed.E() < 4.0:
                 if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.02)):
                     if ddValue[1] < ddValue1:
@@ -789,6 +791,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         ddValue1 = ddValue[1] 
                         ddValue2 = ddValue[2]
                         iWinner  = i
+            ### energy > 4 GeV
             else:
                 if ((0.0 < ddValue[1] < 0.05) and (0.0 < ddValue[2] < 0.01)):
                     if ddValue[1] < ddValue1:
@@ -796,14 +799,18 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         ddValue1 = ddValue[1] 
                         ddValue2 = ddValue[2]
                         iWinner  = i
+                        
+        #### medium multiplicity
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
+            ### energy < 4 GeV
             if(pSeed.E()) < 4:
-                if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.08)):
+                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
                         ddValue2 = ddValue[2]
                         iWinner  = i
+            ### energy > 4 GeV
             else:
                 if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.06)):
                     if ddValue[1] < ddValue1:
@@ -811,15 +818,21 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         ddValue1 = ddValue[1] 
                         ddValue2 = ddValue[2]
                         iWinner  = i
+                        
+        ### low multiplicity
         else:
+            ### tight tracks
             if(nMatched == 4):
-                if(pSeed.E()<4):
-                    if ((0.0 < ddValue[1] < 0.13) and (0.0 < ddValue[2] < 0.13)):
+                ### energy < 4 GeV
+                if(pSeed.E() < 4):
+                    if ((0.0 < ddValue[1] < 0.16) and (0.0 < ddValue[2] < 0.16)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
                             ddValue2 = ddValue[2]
                             iWinner  = i
+                            
+                ### energy > 4 GeV
                 else:
                     if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
@@ -827,16 +840,20 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             ddValue1 = ddValue[1] 
                             ddValue2 = ddValue[2]
                             iWinner  = i
+                            
+            ### loose tracks
             else:
+                ### energy < 4 GeV
                 if(pSeed.E() < 4.):
-                    if ((0.0 < ddValue[1] < 0.09) and (0.0 < ddValue[2] < 0.07)):
+                    if ((0.0 < ddValue[1] < 0.12) and (0.0 < ddValue[2] < 0.12)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
                             ddValue2 = ddValue[2]
                             iWinner  = i
+                ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.07) and (0.0 < ddValue[2] < 0.05)):
+                    if ((0.0 < ddValue[1] < 0.07) and (0.0 < ddValue[2] < 0.07)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -1012,31 +1029,48 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             histos['hSeedDistanceLooseGlobal'].Fill(d)
         
         
-        
-        
-        ### d is in m
-        #if(d > 5*mm2m):
+        ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             if(pSeed.E() < 4.0):
-                if(d > 6*mm2m):
+                if(d > 5*mm2m):
                     return False, {}
             else:
                 if(d > 3*mm2m):
                     return False, {}
-        else:
+            
+        ### medium multiplicity
+        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
-                if(pSeed.E() < 4.0):
-                    if(d > 8*mm2m):
-                        return False, {}
-                else:
-                    if(d > 6*mm2m):
-                        return False, {}
-            else:
                 if(pSeed.E() < 4.0):
                     if(d > 6*mm2m):
                         return False, {}
                 else:
                     if(d > 4*mm2m):
+                        return False, {}
+            else:
+                if(pSeed.E() < 4.0):
+                    if(d > 5*mm2m):
+                        return False, {}
+                else:
+                    if(d > 3*mm2m):
+                        return False, {}
+        ### low multiplicity
+        else:
+            ### tight tracks
+            if(nMatched == 4):
+                if(pSeed.E() < 4.0):
+                    if(d > 10*mm2m):
+                        return False, {}
+                else:
+                    if(d > 8*mm2m):
+                        return False, {}
+            ### loose tracks
+            else:
+                if(pSeed.E() < 4.0):
+                    if(d > 8*mm2m):
+                        return False, {}
+                else:
+                    if(d > 6*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
