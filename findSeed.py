@@ -1060,18 +1060,18 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             ### tight tracks
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 10*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
                 else:
-                    if(d > 8*mm2m):
+                    if(d > 4*mm2m):
                         return False, {}
             ### loose tracks
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 10*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
                 else:
-                    if(d > 6*mm2m):
+                    if(d > 3*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
