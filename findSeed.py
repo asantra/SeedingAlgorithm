@@ -781,6 +781,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             
         #if ((0.0 < ddValue[1] < ddValueCut1) and (0.0 < ddValue[2] < 0.01)):
         #if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.05)):
+        
         ### high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             ### energy < 4 GeV
@@ -825,7 +826,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             if(nMatched == 4):
                 ### energy < 4 GeV
                 if(pSeed.E() < 4):
-                    if ((0.0 < ddValue[1] < 0.16) and (0.0 < ddValue[2] < 0.16)):
+                    if ((0.0 < ddValue[1] < 0.20) and (0.0 < ddValue[2] < 0.16)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -834,7 +835,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                    if ((0.0 < ddValue[1] < 0.15) and (0.0 < ddValue[2] < 0.12)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -845,7 +846,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             else:
                 ### energy < 4 GeV
                 if(pSeed.E() < 4.):
-                    if ((0.0 < ddValue[1] < 0.12) and (0.0 < ddValue[2] < 0.12)):
+                    if ((0.0 < ddValue[1] < 0.15) and (0.0 < ddValue[2] < 0.14)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -853,7 +854,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             iWinner  = i
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.07) and (0.0 < ddValue[2] < 0.07)):
+                    if ((0.0 < ddValue[1] < 0.10) and (0.0 < ddValue[2] < 0.09)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -1059,18 +1060,18 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             ### tight tracks
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 12*mm2m):
+                    if(d > 10*mm2m):
                         return False, {}
                 else:
-                    if(d > 10*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
             ### loose tracks
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 12*mm2m):
+                    if(d > 10*mm2m):
                         return False, {}
                 else:
-                    if(d > 10*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
