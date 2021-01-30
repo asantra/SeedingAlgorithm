@@ -20,7 +20,7 @@ from makeTrackDiagrams import *
 
 ### the seed energy width
 EseedMin       = 2.0  # GeV
-EseedMax       = 13.0 # GeV
+EseedMax       = 15.0 # GeV
 EseedMinPrelim = 0.2  # GeV
 EseedMaxPrelim = 18.0 # GeV
 
@@ -28,6 +28,8 @@ EseedMaxPrelim = 18.0 # GeV
 PseedMin = -0.005 # GeV
 PseedMax = 0.005 # GeV
 
+###
+xDipoleExitMax = 200.
 
 ### cut on nseeds
 nseedsNoFitMax  = 50
@@ -55,7 +57,7 @@ cutFlowDict = OrderedDict(
      ('x1Gtx4',0), 
      ('x1*x4Negative',0), 
      ('z1Eqz4', 0), 
-     ('yDipoleExitGt15',0), 
+     ('yDipoleExitGt5p4',0), 
      ('xDipoleExitLt25',0), 
      ('xDipoleExitGt165', 0), 
      ('xDipoleExitLt0',0), 
@@ -372,8 +374,8 @@ def getExpectedHits(r1, r4, energy):
     global xAbsMargins, yAbsMargins
     
     if(energy < 4.0):
-        xAbsMargins = 0.2
-        yAbsMargins = 0.2
+        xAbsMargins = 0.22
+        yAbsMargins = 0.22
     else:
         xAbsMargins = 0.13
         yAbsMargins = 0.13
@@ -437,8 +439,8 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side,
     
     
     if(energy < 4.0):
-        xAbsMargins = 0.2
-        yAbsMargins = 0.2
+        xAbsMargins = 0.22
+        yAbsMargins = 0.22
     else:
         xAbsMargins = 0.13
         yAbsMargins = 0.13
@@ -781,7 +783,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             
         #if ((0.0 < ddValue[1] < ddValueCut1) and (0.0 < ddValue[2] < 0.01)):
         #if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.05)):
-        
+        ### printing out py
+        #print("-->before cut: ddValue1: ", ddValue[1], " ddValue2 :", ddValue[2], " and pSeed.E() ", pSeed.E(), " nseedsNoFit: ", nseedsNoFit, " nMatched: ",nMatched)
         ### high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             ### energy < 4 GeV
@@ -846,7 +849,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             else:
                 ### energy < 4 GeV
                 if(pSeed.E() < 4.):
-                    if ((0.0 < ddValue[1] < 0.075) and (0.0 < ddValue[2] < 0.075)):
+                    if ((0.0 < ddValue[1] < 0.2) and (0.0 < ddValue[2] < 0.05)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -860,6 +863,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             ddValue1 = ddValue[1] 
                             ddValue2 = ddValue[2]
                             iWinner  = i
+                            
+        #print("-->after cut: ddValue1: ", ddValue[1], " ddValue2 :", ddValue[2], " and pSeed.E() ", pSeed.E(), " nseedsNoFit: ", nseedsNoFit, " nMatched: ",nMatched)
     
     ### only if a good fit is available, return True
     if iWinner >= 0:
@@ -898,7 +903,7 @@ def makeseedNoFit(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     
     
-    if(abs(xDipoleExit) > 330.0/2):
+    if(abs(xDipoleExit) > xDipoleExitMax/2):
         return False, {}
     
 
@@ -949,14 +954,14 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     ### the following cannot be 10.8mm/2 according to the signal tracks
     if(abs(yDipoleExit) > 10.8/2):
         return False, {}
-    cutFlowDict['yDipoleExitGt15'] += 1
+    cutFlowDict['yDipoleExitGt5p4'] += 1
     
     ### This is according to the signal x:y at the dipole exit
     if(abs(xDipoleExit) < 20.0):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     cutFlowDict['xDipoleExitLt25'] += 1
     
-    if(abs(xDipoleExit) > 330.0/2):
+    if(abs(xDipoleExit) > xDipoleExitMax/2):
         return False, {}
     cutFlowDict['xDipoleExitGt165'] += 1
 
@@ -1010,6 +1015,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### checking the track energy
         if(pSeed.E() < EseedMin or pSeed.E() > EseedMax): 
             return False, {}
+        #print("Energy: ", pSeed.E())
         cutFlowDict['trackEnergy'] += 1
         
         
@@ -1028,6 +1034,8 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         else:
 
             histos['hSeedDistanceLooseGlobal'].Fill(d)
+        
+        
         
         
         ### medium and high multiplicity
@@ -1071,11 +1079,14 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
                     if(d > 5*mm2m):
                         return False, {}
                 else:
-                    if(d > 3*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
         winnerFit.update({"distance":d})
+        
+        
+        
         
         
         ### checking the track pY
@@ -1083,14 +1094,23 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             if(abs(pSeed.Py()) > PseedMax): 
                 return False, {}
         else:
-            if(nMatched == 4):
-                if(abs(pSeed.Py()) > PseedMax*2): 
-                    return False, {}
+            if(pSeed.E() < 4):
+                if(nMatched == 4):
+                    if(abs(pSeed.Py()) > PseedMax*2): 
+                        return False, {}
+                else:
+                    if(abs(pSeed.Py()) > PseedMax*1.9): 
+                        return False, {}
             else:
-                if(abs(pSeed.Py()) > PseedMax*1.5): 
-                    return False, {}
+                if(nMatched == 4):
+                    if(abs(pSeed.Py()) > PseedMax*7): 
+                        return False, {}
+                else:
+                    if(abs(pSeed.Py()) > PseedMax*6.2): 
+                        return False, {}
             
         cutFlowDict['checkClusterTrackPy'] += 1
+        
         
         if(winnerFit['nMatched'] == 4):
             cutFlowDict['checkClusterTrackPyTight'] += 1
@@ -1099,8 +1119,63 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
 
     return True, winnerFit
 
+### position of beam
+#3855.2995391705067, -36.40776699029129
+#4145.622119815668, -39.32038834951459
+#4352.99539170507, -42.23300970873788
+#4532.7188940092165, -46.60194174757282
+#4747.00460829493, -49.51456310679612
+#5002.764976958526, -55.33980582524282
+#5237.788018433179, -59.70873786407765
+#5438.248847926267, -64.0776699029127
+#5700.921658986175, -68.44660194174753
+#5901.382488479263, -71.35922330097094
+#6177.880184331798, -77.18446601941753
+#6426.728110599079, -83.009708737864
+#6620.276497695853, -84.46601941747576
+#6779.262672811059, -87.37864077669906
 
-
+#### add diagonal vertex cut
+#def checkVtxCut(vtxx, vtxz):
+    #if((-45.0 < vtxx <= -25.5 ) and (3800 < vtxz <= 4200)):
+        #return True
+    #elif((-55.0 < vtxx <= -35.0) and (4200 < vtxz <= 4500)):
+        #return True
+    #elif((-60.0 < vtxx <= -45.0) and (4500 < vtxz <= 5000)):
+        #return True
+    #elif((-70 < vtxx <= -50.0) and (5000 < vtxz <= 5500)):
+        #return True
+    #elif((-75 < vtxx <= -60.0) and (5500 < vtxz <= 6000)):
+        #return True 
+    #elif((-80 < vtxx <= -65.0) and (5500 < vtxz <= 6000)):
+        #return True
+    #elif((-90 < vtxx <= -70.0) and (6000 < vtxz <= 6500)):
+        #return True
+    #elif((-100.0 < vtxx <= -80.0) and (6500 < vtxz <= 7000)):
+        #return True
+    #else:
+        #return False
+    
+### anything below x, remove it cut
+def checkVtxCut(vtxx, vtxz):
+    if((vtxx <= -25.5 ) and (3800 < vtxz <= 4200)):
+        return True
+    elif((vtxx <= -35.0) and (4200 < vtxz <= 4500)):
+        return True
+    elif((vtxx <= -45.0) and (4500 < vtxz <= 5000)):
+        return True
+    elif((vtxx <= -50.0) and (5000 < vtxz <= 5500)):
+        return True
+    elif((vtxx <= -60.0) and (5500 < vtxz <= 6000)):
+        return True 
+    elif((vtxx <= -65.0) and (5500 < vtxz <= 6000)):
+        return True
+    elif((vtxx <= -70.0) and (6000 < vtxz <= 6500)):
+        return True
+    elif((vtxx <= -80.0) and (6500 < vtxz <= 7000)):
+        return True
+    else:
+        return False
 
 ### The main function
 def main():
@@ -1150,7 +1225,7 @@ def main():
         suffixName          = inTextFile.split('.')[0]
     
     
-    outFile             = TFile("seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root", "RECREATE")
+    outFile                   = TFile("seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root", "RECREATE")
     outFile.cd()
     
     hAllPossible              = TH1D("hAllPossible", "all possible track combination; bunch crossing; number of track combination", 9508, 0, 9508)
@@ -1188,6 +1263,18 @@ def main():
     if 'hics' in inTextFile:
         nBX          = 494
         checkBXMatch = True
+    ### e-beam only background
+    elif 'EBeamOnlyNewSamples' in inTextFile:
+        nBX          = 160
+        checkBXMatch = True
+    elif 'ePlusLaserBkgNewSamples' in inTextFile:
+        nBX          = 139
+        checkBXMatch = True
+    ### g+laser background
+    elif 'gPlusLaserBkgNewSamples' in inTextFile:
+        nBX          = 129
+        checkBXMatch = True
+    ### all other cases
     else:
         nBX          = 1
         checkBXMatch = False
@@ -1219,13 +1306,19 @@ def main():
         ### if needed, select only the signal  
         if(args.needSignal and not(pdgId==-11 and trackId==1)):
             continue
+        failVtxCut = checkVtxCut(vtx_x, vtx_z)
+        ### required to suppress unwanted background
+        #if(vtx_x < -25.5 and (vtx_z > 3600 and vtx_z < 4600)): continue
+        if(failVtxCut): continue
         ### ask for variable energy cut, energyAfterCut is in keV
         energyAfterCut = energyAbsorbed(staveId, energyVal, vtx_z)
         #if(float(eachWord[6]) > args.eCut*1e-6):
+        #### taking tracks with more than 2 GeV of energy
         if(energyAfterCut > 0):
             #### bxNumber, trackId, staveId, x, y, E, weight
             position.append([bxNumber, trackId, staveId, xPos, yPos, energyVal, weight])
 
+    allSeedsTrackLines = []
     #### run the seeding algorithm per BX
     for bxCounter in range(1, nBX+1):
         # separate each bx now
@@ -1341,7 +1434,7 @@ def main():
                     seedCounterNoFit += 1
         
         
-        allSeedsTrackLines = []
+        
         for r4 in allR4Unique[:]:
             for r1 in allR1Unique[:]:
                 ### This is the return of makeseed function
@@ -1371,7 +1464,7 @@ def main():
                     ### values which can be obtained only after fitting
                     if winnerDict['passFit']:
                         hSeedDistance.Fill(winnerDict['distance'])
-                        allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
+                        if(winnerDict['nMatched'] == 4 or winnerDict['nMatched'] == 3):allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
                         xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                         xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                         hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
