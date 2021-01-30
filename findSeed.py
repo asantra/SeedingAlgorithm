@@ -25,11 +25,11 @@ EseedMinPrelim = 0.2  # GeV
 EseedMaxPrelim = 18.0 # GeV
 
 ### the seed pY width
-PseedMin = -0.005 # GeV
-PseedMax = 0.005 # GeV
+PseedMin = -0.0045 # GeV
+PseedMax = 0.0045 # GeV
 
 ###
-xDipoleExitMax = 200.
+xDipoleExitMax = 330.
 
 ### cut on nseeds
 nseedsNoFitMax  = 50
@@ -808,7 +808,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             ### energy < 4 GeV
             if(pSeed.E()) < 4:
-                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
+                if ((0.0 < ddValue[1] < 0.01) and (0.0 < ddValue[2] < 0.01)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -829,7 +829,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             if(nMatched == 4):
                 ### energy < 4 GeV
                 if(pSeed.E() < 4):
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.004)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -838,7 +838,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                    if ((0.0 < ddValue[1] < 0.04) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -1111,6 +1111,9 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             
         cutFlowDict['checkClusterTrackPy'] += 1
         
+        print("$$$$: nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " pSeed.Py(): ", pSeed.Py(), " d: ", d )
+        print("ddValue0: ", winnerFit["ddValue0"], " ddValue1: ", winnerFit["ddValue1"], " ddValue2: ", winnerFit["ddValue2"])
+        
         
         if(winnerFit['nMatched'] == 4):
             cutFlowDict['checkClusterTrackPyTight'] += 1
@@ -1119,21 +1122,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
 
     return True, winnerFit
 
-### position of beam
-#3855.2995391705067, -36.40776699029129
-#4145.622119815668, -39.32038834951459
-#4352.99539170507, -42.23300970873788
-#4532.7188940092165, -46.60194174757282
-#4747.00460829493, -49.51456310679612
-#5002.764976958526, -55.33980582524282
-#5237.788018433179, -59.70873786407765
-#5438.248847926267, -64.0776699029127
-#5700.921658986175, -68.44660194174753
-#5901.382488479263, -71.35922330097094
-#6177.880184331798, -77.18446601941753
-#6426.728110599079, -83.009708737864
-#6620.276497695853, -84.46601941747576
-#6779.262672811059, -87.37864077669906
+
 
 #### add diagonal vertex cut
 #def checkVtxCut(vtxx, vtxz):
