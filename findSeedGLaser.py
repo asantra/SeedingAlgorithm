@@ -1071,43 +1071,43 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             if(pSeed.E() < 4.0):
-                if(d > 10*mm2m):
+                if(d > 15*mm2m):
                     return False, {}
             else:
-                if(d > 5*mm2m):
+                if(d > 12*mm2m):
                     return False, {}
             
         ### medium multiplicity
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 2*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
                 else:
-                    if(d > 6*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 7*mm2m):
+                    if(d > 10*mm2m):
                         return False, {}
                 else:
-                    if(d > 5*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
         ### low multiplicity
         else:
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 2*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
                 else:
-                    if(d > 6*mm2m):
+                    if(d > 7*mm2m):
                         return False, {}
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 7*mm2m):
+                    if(d > 9*mm2m):
                         return False, {}
                 else:
-                    if(d > 5*mm2m):
+                    if(d > 10*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
@@ -1119,16 +1119,16 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         ### checking the track pY
         if(nseedsNoFit > nseedsNoFitMax2):
-            if(abs(pSeed.Py()) > PseedMax*2): 
+            if(abs(pSeed.Py()) > PseedMax*4): 
                 return False, {}
             
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(pSeed.E() < 4):
                 if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*2): 
+                    if(abs(pSeed.Py()) > PseedMax*4): 
                         return False, {}
                 else:
-                    if(abs(pSeed.Py()) > PseedMax*1.9): 
+                    if(abs(pSeed.Py()) > PseedMax*2.5): 
                         return False, {}
             else:
                 if(nMatched == 4):
@@ -1140,10 +1140,10 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         else:
             if(pSeed.E() < 4):
                 if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*2): 
+                    if(abs(pSeed.Py()) > PseedMax*4): 
                         return False, {}
                 else:
-                    if(abs(pSeed.Py()) > PseedMax*1.9): 
+                    if(abs(pSeed.Py()) > PseedMax*3): 
                         return False, {}
             else:
                 if(nMatched == 4):
