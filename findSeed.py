@@ -1500,12 +1500,6 @@ def main():
                             
                             print("nMatched: ", winnerDict['nMatched'], " nExpected: ", winnerDict['nExpected'])
                             print("vertex positions first layer: xpos ", r1[0], " ypos ", r1[1], " energy ", r1[3], " vtx_x ", r1[5], " vtx_y ", r1[6], " vtx_z ", r1[7])
-                            
-                            #print(winnerDict['innerR2FromMatching'])
-                            ##print(winnerDict['outerR2FromMatching'])
-                            ##print(winnerDict['innerR3FromMatching'])
-                            ##print(winnerDict['outerR3FromMatching'])
-                            #print(len(winnerDict['innerR2FromMatching']))
                             if(len(winnerDict['innerR2FromMatching']) >=1 and len(winnerDict['innerR2FromMatching'][0])>=8):
                                 print("vertex positions second inner layer: xpos ",winnerDict['innerR2FromMatching'][0][0], " ypos ", winnerDict['innerR2FromMatching'][0][1]," energy ", winnerDict['innerR2FromMatching'][0][3]," vtx_x ", winnerDict['innerR2FromMatching'][0][5], " vtx_y ", winnerDict['innerR2FromMatching'][0][6], " vtx_z ", winnerDict['innerR2FromMatching'][0][7])
                                 
