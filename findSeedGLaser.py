@@ -33,8 +33,8 @@ xDipoleExitMax = 280.
 xDipoleExitMin = 40.
 
 ### cut on nseeds
-nseedsNoFitMax  = 5
-nseedsNoFitMax2 = 10
+nseedsNoFitMax  = 10
+nseedsNoFitMax2 = 20
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
