@@ -1067,20 +1067,22 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
 
             histos['hSeedDistanceLooseGlobal'].Fill(d)
         
-        
         #print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
         
-        ### medium and high multiplicity
+        
         if(d > 15*mm2m):
-            return False, {}
+           return False, {}
 
                 
         cutFlowDict['checkClusterXDistance'] += 1
         winnerFit.update({"distance":d})
         
-        
-        if(abs(pSeed.Py()) > PseedMax*4): 
-            return False, {}
+        if(nseedsNoFit < nseedsNoFitMax):
+            if(abs(pSeed.Py()) > PseedMax*0.4): 
+                return False, {}
+        else:
+            if(abs(pSeed.Py()) > PseedMax*4): 
+                return False, {}
             
             
         cutFlowDict['checkClusterTrackPy'] += 1
