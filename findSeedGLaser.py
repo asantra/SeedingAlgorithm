@@ -32,6 +32,8 @@ PseedMax = 0.01 # GeV
 xDipoleExitMax = 280.
 xDipoleExitMin = 40.
 
+yDipoleExitMax = 13.0
+
 ### cut on nseeds
 nseedsNoFitMax  = 10
 nseedsNoFitMax2 = 25
@@ -924,7 +926,7 @@ def makeseedNoFit(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
     xDipoleExit = xofz(r1, r4, zDipoleExit)
     ### The following cuts are coming because of the distribution of the signal
     ### the following cannot be 10.8mm/2 according to the signal tracks
-    if(abs(yDipoleExit) > 10.8/2):
+    if(abs(yDipoleExit) > yDipoleExitMax/2):
         return False, {}
     
     
@@ -982,7 +984,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     xDipoleExit = xofz(r1, r4, zDipoleExit)
     ### The following cuts are coming because of the distribution of the signal
     ### the following cannot be 10.8mm/2 according to the signal tracks
-    if(abs(yDipoleExit) > 10.8/2):
+    if(abs(yDipoleExit) > yDipoleExitMax/2):
         return False, {}
     cutFlowDict['yDipoleExitGt5p4'] += 1
     
@@ -1069,89 +1071,17 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         #print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
         
         ### medium and high multiplicity
-        if(nseedsNoFit > nseedsNoFitMax2):
-            if(pSeed.E() < 4.0):
-                if(d > 15*mm2m):
-                    return False, {}
-            else:
-                if(d > 12*mm2m):
-                    return False, {}
-            
-        ### medium multiplicity
-        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
-            if(nMatched == 4):
-                if(pSeed.E() < 4.0):
-                    if(d > 6*mm2m):
-                        return False, {}
-                else:
-                    if(d > 8*mm2m):
-                        return False, {}
-            else:
-                if(pSeed.E() < 4.0):
-                    if(d > 10*mm2m):
-                        return False, {}
-                else:
-                    if(d > 8*mm2m):
-                        return False, {}
-        ### low multiplicity
-        else:
-            if(nMatched == 4):
-                if(pSeed.E() < 4.0):
-                    if(d > 8*mm2m):
-                        return False, {}
-                else:
-                    if(d > 7*mm2m):
-                        return False, {}
-            else:
-                if(pSeed.E() < 4.0):
-                    if(d > 9*mm2m):
-                        return False, {}
-                else:
-                    if(d > 10*mm2m):
-                        return False, {}
+        if(d > 15*mm2m):
+            return False, {}
+
                 
         cutFlowDict['checkClusterXDistance'] += 1
         winnerFit.update({"distance":d})
         
         
-        
-        
-        
-        ### checking the track pY
-        if(nseedsNoFit > nseedsNoFitMax2):
-            if(abs(pSeed.Py()) > PseedMax*4): 
-                return False, {}
+        if(abs(pSeed.Py()) > PseedMax*4): 
+            return False, {}
             
-        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
-            if(pSeed.E() < 4):
-                if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*4): 
-                        return False, {}
-                else:
-                    if(abs(pSeed.Py()) > PseedMax*2.5): 
-                        return False, {}
-            else:
-                if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*7): 
-                        return False, {}
-                else:
-                    if(abs(pSeed.Py()) > PseedMax*6.2): 
-                        return False, {}
-        else:
-            if(pSeed.E() < 4):
-                if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*4): 
-                        return False, {}
-                else:
-                    if(abs(pSeed.Py()) > PseedMax*3): 
-                        return False, {}
-            else:
-                if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*7): 
-                        return False, {}
-                else:
-                    if(abs(pSeed.Py()) > PseedMax*6.2): 
-                        return False, {}
             
         cutFlowDict['checkClusterTrackPy'] += 1
         
