@@ -29,7 +29,8 @@ PseedMin = -0.01 # GeV
 PseedMax = 0.01 # GeV
 
 ###
-xDipoleExitMax = 250.
+xDipoleExitMax = 280.
+xDipoleExitMin = 40.
 
 ### cut on nseeds
 nseedsNoFitMax  = 5
@@ -928,7 +929,7 @@ def makeseedNoFit(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
     
     
     ### This is according to the signal x:y at the dipole exit
-    if(abs(xDipoleExit) < 20.0):
+    if(abs(xDipoleExit) < xDipoleExitMin/2):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     
     
@@ -986,7 +987,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     cutFlowDict['yDipoleExitGt5p4'] += 1
     
     ### This is according to the signal x:y at the dipole exit
-    if(abs(xDipoleExit) < 20.0):
+    if(abs(xDipoleExit) < xDipoleExitMin/2):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     cutFlowDict['xDipoleExitLt25'] += 1
     
@@ -1073,42 +1074,42 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
                 if(d > 10*mm2m):
                     return False, {}
             else:
-                if(d > 8*mm2m):
+                if(d > 5*mm2m):
                     return False, {}
             
         ### medium multiplicity
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 10*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
                 else:
-                    if(d > 8*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 10*mm2m):
+                    if(d > 7*mm2m):
                         return False, {}
                 else:
-                    if(d > 8*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
         ### low multiplicity
         else:
             ### tight tracks
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 4*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
                 else:
-                    if(d > 2*mm2m):
+                    if(d > 4*mm2m):
                         return False, {}
             ### loose tracks
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 4*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
                 else:
-                    if(d > 2*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
@@ -1120,22 +1121,22 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         ### checking the track pY
         if(nseedsNoFit > nseedsNoFitMax):
-            if(abs(pSeed.Py()) > PseedMax*3): 
+            if(abs(pSeed.Py()) > PseedMax*2): 
                 return False, {}
         else:
             if(pSeed.E() < 4):
                 if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax): 
+                    if(abs(pSeed.Py()) > PseedMax*2): 
                         return False, {}
                 else:
-                    if(abs(pSeed.Py()) > PseedMax*1.2): 
+                    if(abs(pSeed.Py()) > PseedMax*1.9): 
                         return False, {}
             else:
                 if(nMatched == 4):
-                    if(abs(pSeed.Py()) > PseedMax*3): 
+                    if(abs(pSeed.Py()) > PseedMax*7): 
                         return False, {}
                 else:
-                    if(abs(pSeed.Py()) > PseedMax*4): 
+                    if(abs(pSeed.Py()) > PseedMax*6.2): 
                         return False, {}
             
         cutFlowDict['checkClusterTrackPy'] += 1
