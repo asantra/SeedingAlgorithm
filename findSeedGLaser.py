@@ -1069,20 +1069,34 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         #print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
         
-        
-        if(d > 15*mm2m):
-           return False, {}
+        ### for positron side
+        if(side=="Positron"):
+            if(d > 15*mm2m):
+                return False, {}
+        ### for electron side    
+        else:
+            if(d > 30*mm2m):
+                return False, {}
 
                 
         cutFlowDict['checkClusterXDistance'] += 1
         winnerFit.update({"distance":d})
         
-        if(nseedsNoFit < nseedsNoFitMax):
-            if(abs(pSeed.Py()) > PseedMax*0.4): 
-                return False, {}
+        if(side=="Positron"):
+            if(nseedsNoFit < nseedsNoFitMax):
+                if(abs(pSeed.Py()) > PseedMax*0.4): 
+                    return False, {}
+            else:
+                if(abs(pSeed.Py()) > PseedMax*4): 
+                    return False, {}
+        ### for electron side        
         else:
-            if(abs(pSeed.Py()) > PseedMax*4): 
-                return False, {}
+            if(nseedsNoFit < nseedsNoFitMax):
+                if(abs(pSeed.Py()) > PseedMax*2): 
+                    return False, {}
+            else:
+                if(abs(pSeed.Py()) > PseedMax*10): 
+                    return False, {}
             
             
         cutFlowDict['checkClusterTrackPy'] += 1
