@@ -34,7 +34,7 @@ xDipoleExitMin = 40.
 
 ### cut on nseeds
 nseedsNoFitMax  = 5
-nseedsNoFitMax2 = 10
+nseedsNoFitMax2 = 30
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
@@ -1066,7 +1066,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             histos['hSeedDistanceLooseGlobal'].Fill(d)
         
         
-        print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
+        #print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
         
         ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
