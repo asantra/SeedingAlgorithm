@@ -800,7 +800,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         if(nseedsNoFit > nseedsNoFitMax2):
             ### energy < 4 GeV
             if pSeed.E() < 4.0:
-                if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.02)):
+                if ((0.0 < ddValue[1] < 0.12) and (0.0 < ddValue[2] < 0.02)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -808,7 +808,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         iWinner  = i
             ### energy > 4 GeV
             else:
-                if ((0.0 < ddValue[1] < 0.05) and (0.0 < ddValue[2] < 0.01)):
+                if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.05)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -819,7 +819,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             ### energy < 4 GeV
             if(pSeed.E()) < 4:
-                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
+                if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.05)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -827,7 +827,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         iWinner  = i
             ### energy > 4 GeV
             else:
-                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.06)):
+                if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.06)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -1070,27 +1070,27 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             if(pSeed.E() < 4.0):
-                if(d > 5*mm2m):
+                if(d > 10*mm2m):
                     return False, {}
             else:
-                if(d > 3*mm2m):
+                if(d > 5*mm2m):
                     return False, {}
             
         ### medium multiplicity
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 6*mm2m):
+                    if(d > 8*mm2m):
                         return False, {}
                 else:
-                    if(d > 4*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 5*mm2m):
+                    if(d > 7*mm2m):
                         return False, {}
                 else:
-                    if(d > 3*mm2m):
+                    if(d > 5*mm2m):
                         return False, {}
         ### low multiplicity
         else:
@@ -1120,7 +1120,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         ### checking the track pY
         if(nseedsNoFit > nseedsNoFitMax):
-            if(abs(pSeed.Py()) > PseedMax): 
+            if(abs(pSeed.Py()) > PseedMax*2): 
                 return False, {}
         else:
             if(pSeed.E() < 4):
