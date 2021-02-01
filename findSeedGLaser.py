@@ -1066,7 +1066,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             histos['hSeedDistanceLooseGlobal'].Fill(d)
         
         
-        
+        print("nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " d: ", d, " pSeed.Py(): ", pSeed.Py())
         
         ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
@@ -1081,7 +1081,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 8*mm2m):
+                    if(d > 2*mm2m):
                         return False, {}
                 else:
                     if(d > 6*mm2m):
