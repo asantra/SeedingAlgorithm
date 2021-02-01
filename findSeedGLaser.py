@@ -34,7 +34,7 @@ xDipoleExitMin = 40.
 
 ### cut on nseeds
 nseedsNoFitMax  = 10
-nseedsNoFitMax2 = 20
+nseedsNoFitMax2 = 25
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
@@ -1095,18 +1095,16 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
                         return False, {}
         ### low multiplicity
         else:
-            ### tight tracks
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
-                    if(d > 6*mm2m):
+                    if(d > 2*mm2m):
                         return False, {}
                 else:
-                    if(d > 4*mm2m):
+                    if(d > 6*mm2m):
                         return False, {}
-            ### loose tracks
             else:
                 if(pSeed.E() < 4.0):
-                    if(d > 5*mm2m):
+                    if(d > 7*mm2m):
                         return False, {}
                 else:
                     if(d > 5*mm2m):
@@ -1120,9 +1118,25 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         
         ### checking the track pY
-        if(nseedsNoFit > nseedsNoFitMax):
+        if(nseedsNoFit > nseedsNoFitMax2):
             if(abs(pSeed.Py()) > PseedMax*2): 
                 return False, {}
+            
+        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
+            if(pSeed.E() < 4):
+                if(nMatched == 4):
+                    if(abs(pSeed.Py()) > PseedMax*2): 
+                        return False, {}
+                else:
+                    if(abs(pSeed.Py()) > PseedMax*1.9): 
+                        return False, {}
+            else:
+                if(nMatched == 4):
+                    if(abs(pSeed.Py()) > PseedMax*7): 
+                        return False, {}
+                else:
+                    if(abs(pSeed.Py()) > PseedMax*6.2): 
+                        return False, {}
         else:
             if(pSeed.E() < 4):
                 if(nMatched == 4):
