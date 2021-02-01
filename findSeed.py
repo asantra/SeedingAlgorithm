@@ -25,11 +25,11 @@ EseedMinPrelim = 0.2  # GeV
 EseedMaxPrelim = 18.0 # GeV
 
 ### the seed pY width
-PseedMin = -0.0045 # GeV
-PseedMax = 0.0045 # GeV
+PseedMin = -0.005 # GeV
+PseedMax = 0.005 # GeV
 
 ###
-xDipoleExitMax = 330.
+xDipoleExitMax = 200.
 
 ### cut on nseeds
 nseedsNoFitMax  = 50
@@ -781,8 +781,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             histos['hSVDValues2LooseGlobal'].Fill(ddValue[1])
             histos['hSVDValues3LooseGlobal'].Fill(ddValue[2])
             
-        #if ((0.0 < ddValue[1] < ddValueCut1) and (0.0 < ddValue[2] < 0.01)):
-        #if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.05)):
+        
         ### printing out py
         #print("-->before cut: ddValue1: ", ddValue[1], " ddValue2 :", ddValue[2], " and pSeed.E() ", pSeed.E(), " nseedsNoFit: ", nseedsNoFit, " nMatched: ",nMatched)
         ### high multiplicity
@@ -808,7 +807,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             ### energy < 4 GeV
             if(pSeed.E()) < 4:
-                if ((0.0 < ddValue[1] < 0.01) and (0.0 < ddValue[2] < 0.01)):
+                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
                         ddValue1 = ddValue[1] 
@@ -829,7 +828,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             if(nMatched == 4):
                 ### energy < 4 GeV
                 if(pSeed.E() < 4):
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.004)):
+                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -838,7 +837,7 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.04) and (0.0 < ddValue[2] < 0.1)):
+                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
                             ddValue1 = ddValue[1] 
@@ -989,7 +988,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit)
     
     ### add the nMatched and nExpected to the winnerFit dictionary
-    winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected, 'xExit':xExit, 'yExit':yExit, 'passFit':passFit, "pSeedPreFit":p})
+    winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected, 'xExit':xExit, 'yExit':yExit, 'passFit':passFit, "pSeedPreFit":p, 'innerR2FromMatching':innerR2FromMatching, 'outerR2FromMatching':outerR2FromMatching, 'innerR3FromMatching':innerR3FromMatching, 'outerR3FromMatching':outerR3FromMatching})
     
     ### decide when we need fit or not
     if((useFit==1) and (not passFit)):
@@ -1111,8 +1110,8 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             
         cutFlowDict['checkClusterTrackPy'] += 1
         
-        print("$$$$: nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " pSeed.Py(): ", pSeed.Py(), " d: ", d )
-        print("ddValue0: ", winnerFit["ddValue0"], " ddValue1: ", winnerFit["ddValue1"], " ddValue2: ", winnerFit["ddValue2"])
+        #print("$$$$: nseedsNoFit: ", nseedsNoFit, " pSeed.E(): ", pSeed.E(), " pSeed.Py(): ", pSeed.Py(), " d: ", d )
+        #print("ddValue0: ", winnerFit["ddValue0"], " ddValue1: ", winnerFit["ddValue1"], " ddValue2: ", winnerFit["ddValue2"])
         
         
         if(winnerFit['nMatched'] == 4):
@@ -1252,6 +1251,16 @@ def main():
     if 'hics' in inTextFile:
         nBX          = 494
         checkBXMatch = True
+    ### g-laser signal
+    elif 'bppp_165gev_w0_3000nm' in inTextFile:
+        nBX          = 1001
+        checkBXMatch = True
+    elif 'bppp_165gev_w0_5000nm' in inTextFile:
+        nBX          = 1981
+        checkBXMatch = True
+    elif 'bppp_165gev_w0_8000nm' in inTextFile:
+        nBX          = 1943
+        checkBXMatch = True
     ### e-beam only background
     elif 'EBeamOnlyNewSamples' in inTextFile:
         nBX          = 160
@@ -1293,19 +1302,19 @@ def main():
         ### do not want photons, as they will not leave track
         if(pdgId==22): continue
         ### if needed, select only the signal  
-        if(args.needSignal and not(pdgId==-11 and trackId==1)):
+        if( args.needSignal and ( (side=="Positron" and not(pdgId==-11 and trackId==1)) or (side=="Electron" and not(pdgId==11 and trackId==1)) ) ):
             continue
         failVtxCut = checkVtxCut(vtx_x, vtx_z)
         ### required to suppress unwanted background
         #if(vtx_x < -25.5 and (vtx_z > 3600 and vtx_z < 4600)): continue
-        if(failVtxCut): continue
+        #if(failVtxCut): continue
         ### ask for variable energy cut, energyAfterCut is in keV
         energyAfterCut = energyAbsorbed(staveId, energyVal, vtx_z)
         #if(float(eachWord[6]) > args.eCut*1e-6):
         #### taking tracks with more than 2 GeV of energy
         if(energyAfterCut > 0):
             #### bxNumber, trackId, staveId, x, y, E, weight
-            position.append([bxNumber, trackId, staveId, xPos, yPos, energyVal, weight])
+            position.append([bxNumber, trackId, staveId, xPos, yPos, energyVal, weight, vtx_x, vtx_y, vtx_z])
 
     allSeedsTrackLines = []
     #### run the seeding algorithm per BX
@@ -1330,40 +1339,40 @@ def main():
             ### x, y, z and E
             if(side=="Positron"):
                 if (values[2] == 0):
-                    allR1Inner.append([values[3], values[4], z1inner, values[5], values[6]])
+                    allR1Inner.append([values[3], values[4], z1inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 1):
-                    allR1Outer.append([values[3], values[4], z1outer, values[5], values[6]])
+                    allR1Outer.append([values[3], values[4], z1outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 2):
-                    allR2Inner.append([values[3], values[4], z2inner, values[5], values[6]])
+                    allR2Inner.append([values[3], values[4], z2inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 3):
-                    allR2Outer.append([values[3], values[4], z2outer, values[5], values[6]])
+                    allR2Outer.append([values[3], values[4], z2outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 4):
-                    allR3Inner.append([values[3], values[4], z3inner, values[5], values[6]])
+                    allR3Inner.append([values[3], values[4], z3inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 5):
-                    allR3Outer.append([values[3], values[4], z3outer, values[5], values[6]])
+                    allR3Outer.append([values[3], values[4], z3outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 6):
-                    allR4Inner.append([values[3], values[4], z4inner, values[5], values[6]])
+                    allR4Inner.append([values[3], values[4], z4inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 7):
-                    allR4Outer.append([values[3], values[4], z4outer, values[5], values[6]])
+                    allR4Outer.append([values[3], values[4], z4outer, values[5], values[6], values[7], values[8], values[9]])
                 else:
                     continue
             else:
                 if (values[2] == 8):
-                    allR1Inner.append([values[3], values[4], z1inner, values[5], values[6]])
+                    allR1Inner.append([values[3], values[4], z1inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 9):
-                    allR1Outer.append([values[3], values[4], z1outer, values[5], values[6]])
+                    allR1Outer.append([values[3], values[4], z1outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 10):
-                    allR2Inner.append([values[3], values[4], z2inner, values[5], values[6]])
+                    allR2Inner.append([values[3], values[4], z2inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 11):
-                    allR2Outer.append([values[3], values[4], z2outer, values[5], values[6]])
+                    allR2Outer.append([values[3], values[4], z2outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 12):
-                    allR3Inner.append([values[3], values[4], z3inner, values[5], values[6]])
+                    allR3Inner.append([values[3], values[4], z3inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 13):
-                    allR3Outer.append([values[3], values[4], z3outer, values[5], values[6]])
+                    allR3Outer.append([values[3], values[4], z3outer, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 14):
-                    allR4Inner.append([values[3], values[4], z4inner, values[5], values[6]])
+                    allR4Inner.append([values[3], values[4], z4inner, values[5], values[6], values[7], values[8], values[9]])
                 elif (values[2] == 15):
-                    allR4Outer.append([values[3], values[4], z4outer, values[5], values[6]])
+                    allR4Outer.append([values[3], values[4], z4outer, values[5], values[6], values[7], values[8], values[9]])
                 else:
                     continue
                 
@@ -1457,7 +1466,22 @@ def main():
                         xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                         xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                         hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
-                        
+                        if(winnerDict['nMatched'] == 4):
+                            print("vertex positions first layer: vtx_x ", r1[5], " vtx_y ", r1[6], " vtx_z ", r1[7])
+                            print(winnerDict['innerR2FromMatching'])
+                            print(winnerDict['outerR2FromMatching'])
+                            print(winnerDict['innerR3FromMatching'])
+                            print(winnerDict['outerR3FromMatching'])
+                            if(len(winnerDict['innerR2FromMatching'])>=8):
+                             print("vertex positions second inner layer: vtx_x ", winnerDict['innerR2FromMatching'][5], " vtx_y ", winnerDict['innerR2FromMatching'][6], " vtx_z ", winnerDict['innerR2FromMatching'][7])
+                            if(len(winnerDict['outerR2FromMatching'])>=8):
+                             print("vertex positions second outer layer: vtx_x ", winnerDict['outerR2FromMatching'][5], " vtx_y ", winnerDict['outerR2FromMatching'][6], " vtx_z ", winnerDict['outerR2FromMatching'][7])
+                             
+                            if(len(winnerDict['innerR3FromMatching'])>=8):
+                             print("vertex positions third inner layer: vtx_x ", winnerDict['innerR3FromMatching'][5], " vtx_y ", winnerDict['innerR3FromMatching'][6], " vtx_z ", winnerDict['innerR3FromMatching'][7])
+                            if(len(winnerDict['outerR3FromMatching'])>=8):
+                             print("vertex positions third outer layer: vtx_x ", winnerDict['outerR3FromMatching'][5], " vtx_y ", winnerDict['outerR3FromMatching'][6], " vtx_z ", winnerDict['outerR3FromMatching'][7])
+                            print("vertex positions last layer: vtx_x ", r4[5], " vtx_y ", r4[6], " vtx_z ", r4[7])
                         hSVDValues1.Fill(winnerDict["ddValue0"])
                         hSVDValues2.Fill(winnerDict["ddValue1"])
                         hSVDValues3.Fill(winnerDict["ddValue2"])
