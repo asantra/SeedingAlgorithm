@@ -370,7 +370,7 @@ def drawFit(name,linepts,hits):
     cnv.SaveAs(name)
    
 ### get the expected number of hits in the layer 2 and layer 3 of the tracker given the position of the track
-def getExpectedHits(r1, r4, energy):
+def getExpectedHits(r1, r4, energy, side):
     global xAbsMargins, yAbsMargins
     
     if(energy < 4.0):
@@ -413,14 +413,25 @@ def getExpectedHits(r1, r4, energy):
     x3Outer            = xofz(r1, r4, z3outer)
     
     for chipName, boundaries in xBoundaries.items(): 
-        if "layerid2" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
-            expectedHits2Inner += 1
-        if "layerid3" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
-            expectedHits2Outer += 1
-        if "layerid4" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
-            expectedHits3Inner += 1
-        if "layerid5" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
-            expectedHits3Outer += 1
+        #print(chipName)
+        if(side=="Positron"):
+            if "layerid2" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
+                expectedHits2Inner += 1
+            if "layerid3" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
+                expectedHits2Outer += 1
+            if "layerid4" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
+                expectedHits3Inner += 1
+            if "layerid5" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
+                expectedHits3Outer += 1
+        else:
+            if "layerid10" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
+                expectedHits2Inner += 1
+            if "layerid11" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
+                expectedHits2Outer += 1
+            if "layerid12" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
+                expectedHits3Inner += 1
+            if "layerid13" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
+                expectedHits3Outer += 1
     
     
     return expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer
@@ -431,7 +442,7 @@ def getExpectedHits(r1, r4, energy):
 ### check if there are hits along one track in layer 2 and layer 3
 def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, energy):
     global ddList, xAbsMargins, yAbsMargins
-    expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer = getExpectedHits(r1, r4, energy)
+    expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer = getExpectedHits(r1, r4, energy, side)
     hitsOnRoad2Inner = 0   ### how many tracks accepted in the road along the r1 and r4
     hitsOnRoad2Outer = 0
     hitsOnRoad3Inner = 0   ### how many tracks accepted in the road along the r1 and r4
@@ -533,10 +544,11 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side,
         outerR3FromMatching.append(allR3Outer[i3]) ### collect all matched tracks from layer 3, remove the break
     
     ### find the number of actual matched tracks
+    
     nMatched = (expectedHits2Inner<=hitsOnRoad2Inner)+(expectedHits2Outer<=hitsOnRoad2Outer)+(expectedHits3Inner<=hitsOnRoad3Inner)+(expectedHits3Outer<=hitsOnRoad3Outer)
     ### find the number of expected tracks
     nExpected = expectedHits2Inner + expectedHits2Outer + expectedHits3Inner + expectedHits3Outer
-    
+    #print("nMatched: ", nMatched, " nExpected: ", nExpected)
     ### only if we have hit in one of the two inner layer of the tracker, we select the seed track, otherwise we reject the track
     if(nMatched>=3):
         return nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching
@@ -545,7 +557,7 @@ def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side,
         
         
 #### prepare the SVD fit for the seed track
-def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit):
+def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit, side="Positron"):
     ### now check if the SVD match works
     allDDList = {'dd':[], 'linepts':[], 'i2Inner':[], 'i2Outer':[], 'i3Inner':[], 'i3Outer':[]}
     #### number of matches tracks in each of the staves of the layer 2 and layer 3
@@ -828,21 +840,39 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             if(nMatched == 4):
                 ### energy < 4 GeV
                 if(pSeed.E() < 4):
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
-                        if ddValue[1] < ddValue1:
-                            ddValue0 = ddValue[0]
-                            ddValue1 = ddValue[1] 
-                            ddValue2 = ddValue[2]
-                            iWinner  = i
+                    if(side=="Electron"):
+                        #if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.004)):
+                        if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                            if ddValue[1] < ddValue1:
+                                ddValue0 = ddValue[0]
+                                ddValue1 = ddValue[1] 
+                                ddValue2 = ddValue[2]
+                                iWinner  = i
+                    else:
+                        if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                            if ddValue[1] < ddValue1:
+                                ddValue0 = ddValue[0]
+                                ddValue1 = ddValue[1] 
+                                ddValue2 = ddValue[2]
+                                iWinner  = i
                             
                 ### energy > 4 GeV
                 else:
-                    if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
-                        if ddValue[1] < ddValue1:
-                            ddValue0 = ddValue[0]
-                            ddValue1 = ddValue[1] 
-                            ddValue2 = ddValue[2]
-                            iWinner  = i
+                    if(side=="Electron"):
+                        #if ((0.0 < ddValue[1] < 0.04) and (0.0 < ddValue[2] < 0.1)):
+                        if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                            if ddValue[1] < ddValue1:
+                                ddValue0 = ddValue[0]
+                                ddValue1 = ddValue[1] 
+                                ddValue2 = ddValue[2]
+                                iWinner  = i
+                    else:
+                        if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
+                            if ddValue[1] < ddValue1:
+                                ddValue0 = ddValue[0]
+                                ddValue1 = ddValue[1] 
+                                ddValue2 = ddValue[2]
+                                iWinner  = i
                             
             ### loose tracks
             else:
@@ -985,7 +1015,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     cutFlowDict['checkClusterTracksMiddleLayers'] += 1
     
     
-    passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit)
+    passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit, side)
     
     ### add the nMatched and nExpected to the winnerFit dictionary
     winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected, 'xExit':xExit, 'yExit':yExit, 'passFit':passFit, "pSeedPreFit":p, 'innerR2FromMatching':innerR2FromMatching, 'outerR2FromMatching':outerR2FromMatching, 'innerR3FromMatching':innerR3FromMatching, 'outerR3FromMatching':outerR3FromMatching})
@@ -1180,8 +1210,6 @@ def main():
     for index, row in df.iterrows():
         detid   = row["detid"]
         layerid = row["layerid"]
-        if(layerid > 7):
-            continue
         xMin, xMax = GetSensorXBoundaries(detid, layerid)
         xBoundaries.update({"detid"+str(detid)+"_layerid"+str(layerid):[xMin, xMax]})
     
@@ -1320,6 +1348,7 @@ def main():
     #### run the seeding algorithm per BX
     for bxCounter in range(1, nBX+1):
         # separate each bx now
+        #if(bxCounter!=58):continue
         eachBXValue = []
         for tracks in position:
             ### the below is needed for e+laser hics setup
@@ -1462,26 +1491,36 @@ def main():
                     ### values which can be obtained only after fitting
                     if winnerDict['passFit']:
                         hSeedDistance.Fill(winnerDict['distance'])
-                        if(winnerDict['nMatched'] == 4 or winnerDict['nMatched'] == 3):allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
+                        if(winnerDict['nMatched'] == 4 or winnerDict['nMatched'] == 3):
+                            allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
                         xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                         xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                         hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
-                        if(winnerDict['nMatched'] == 4):
-                            print("vertex positions first layer: vtx_x ", r1[5], " vtx_y ", r1[6], " vtx_z ", r1[7])
-                            print(winnerDict['innerR2FromMatching'])
-                            print(winnerDict['outerR2FromMatching'])
-                            print(winnerDict['innerR3FromMatching'])
-                            print(winnerDict['outerR3FromMatching'])
-                            if(len(winnerDict['innerR2FromMatching'])>=8):
-                             print("vertex positions second inner layer: vtx_x ", winnerDict['innerR2FromMatching'][5], " vtx_y ", winnerDict['innerR2FromMatching'][6], " vtx_z ", winnerDict['innerR2FromMatching'][7])
-                            if(len(winnerDict['outerR2FromMatching'])>=8):
-                             print("vertex positions second outer layer: vtx_x ", winnerDict['outerR2FromMatching'][5], " vtx_y ", winnerDict['outerR2FromMatching'][6], " vtx_z ", winnerDict['outerR2FromMatching'][7])
+                        if(False and winnerDict['nMatched'] >= 3):
+                            
+                            print("nMatched: ", winnerDict['nMatched'], " nExpected: ", winnerDict['nExpected'])
+                            print("vertex positions first layer: xpos ", r1[0], " ypos ", r1[1], " energy ", r1[3], " vtx_x ", r1[5], " vtx_y ", r1[6], " vtx_z ", r1[7])
+                            
+                            #print(winnerDict['innerR2FromMatching'])
+                            ##print(winnerDict['outerR2FromMatching'])
+                            ##print(winnerDict['innerR3FromMatching'])
+                            ##print(winnerDict['outerR3FromMatching'])
+                            #print(len(winnerDict['innerR2FromMatching']))
+                            if(len(winnerDict['innerR2FromMatching']) >=1 and len(winnerDict['innerR2FromMatching'][0])>=8):
+                                print("vertex positions second inner layer: xpos ",winnerDict['innerR2FromMatching'][0][0], " ypos ", winnerDict['innerR2FromMatching'][0][1]," energy ", winnerDict['innerR2FromMatching'][0][3]," vtx_x ", winnerDict['innerR2FromMatching'][0][5], " vtx_y ", winnerDict['innerR2FromMatching'][0][6], " vtx_z ", winnerDict['innerR2FromMatching'][0][7])
+                                
+                            if(len(winnerDict['outerR2FromMatching']) >=1 and len(winnerDict['outerR2FromMatching'][0])>=8):
+                                print("vertex positions second outer layer: xpos ",winnerDict['outerR2FromMatching'][0][0], " ypos ", winnerDict['outerR2FromMatching'][0][1], " energy ", winnerDict['outerR2FromMatching'][0][3]," vtx_x ", winnerDict['outerR2FromMatching'][0][5], " vtx_y ", winnerDict['outerR2FromMatching'][0][6], " vtx_z ", winnerDict['outerR2FromMatching'][0][7])
                              
-                            if(len(winnerDict['innerR3FromMatching'])>=8):
-                             print("vertex positions third inner layer: vtx_x ", winnerDict['innerR3FromMatching'][5], " vtx_y ", winnerDict['innerR3FromMatching'][6], " vtx_z ", winnerDict['innerR3FromMatching'][7])
-                            if(len(winnerDict['outerR3FromMatching'])>=8):
-                             print("vertex positions third outer layer: vtx_x ", winnerDict['outerR3FromMatching'][5], " vtx_y ", winnerDict['outerR3FromMatching'][6], " vtx_z ", winnerDict['outerR3FromMatching'][7])
-                            print("vertex positions last layer: vtx_x ", r4[5], " vtx_y ", r4[6], " vtx_z ", r4[7])
+                            if(len(winnerDict['innerR3FromMatching']) >=1 and len(winnerDict['innerR3FromMatching'][0])>=8):
+                                print("vertex positions third inner layer: xpos ", winnerDict['innerR3FromMatching'][0][0], " ypos ", winnerDict['innerR3FromMatching'][0][1], " energy ", winnerDict['innerR3FromMatching'][0][3]," vtx_x ", winnerDict['innerR3FromMatching'][0][5], " vtx_y ", winnerDict['innerR3FromMatching'][0][6], " vtx_z ", winnerDict['innerR3FromMatching'][0][7])
+                            if(len(winnerDict['outerR3FromMatching']) >=1 and len(winnerDict['outerR3FromMatching'][0])>=8):
+                                print("vertex positions third outer layer: xpos ",winnerDict['outerR3FromMatching'][0][0], " ypos ", winnerDict['outerR3FromMatching'][0][1], " energy ", winnerDict['outerR3FromMatching'][0][3]," vtx_x ", winnerDict['outerR3FromMatching'][0][5], " vtx_y ", winnerDict['outerR3FromMatching'][0][6], " vtx_z ", winnerDict['outerR3FromMatching'][0][7])
+                             
+                             
+                            print("vertex positions last layer: xpos ", r4[0], " ypos ", r4[1], " energy ", r4[3], " vtx_x ", r4[5], " vtx_y ", r4[6], " vtx_z ", r4[7])
+                            
+                            
                         hSVDValues1.Fill(winnerDict["ddValue0"])
                         hSVDValues2.Fill(winnerDict["ddValue1"])
                         hSVDValues3.Fill(winnerDict["ddValue2"])
