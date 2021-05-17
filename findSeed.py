@@ -34,6 +34,9 @@ xDipoleExitMax = 330.
 ### cut on nseeds
 nseedsNoFitMax  = 50
 nseedsNoFitMax2 = 320
+nseedsNoFitMax3 = 200000
+nseedsNoFitMax4 = 9000000
+nseedsNoFitMax5 = 50000000
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
@@ -796,7 +799,38 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         ### printing out py
         #print("-->before cut: ddValue1: ", ddValue[1], " ddValue2 :", ddValue[2], " and pSeed.E() ", pSeed.E(), " nseedsNoFit: ", nseedsNoFit, " nMatched: ",nMatched)
         ### high multiplicity
-        if(nseedsNoFit > nseedsNoFitMax2):
+        
+        ### high multiplicity
+        if(nseedsNoFit > nseedsNoFitMax5):
+            if ((0.0 < ddValue[1] < 0.006) and (0.0 < ddValue[2] < 0.001)):
+                if ddValue[1] < ddValue1:
+                    ddValue0 = ddValue[0]
+                    ddValue1 = ddValue[1] 
+                    ddValue2 = ddValue[2]
+                    iWinner  = i
+        elif(nseedsNoFitMax4 < nseedsNoFit <= nseedsNoFitMax5):
+            if ((0.0 < ddValue[1] < 0.008) and (0.0 < ddValue[2] < 0.002)):
+                if ddValue[1] < ddValue1:
+                    ddValue0 = ddValue[0]
+                    ddValue1 = ddValue[1] 
+                    ddValue2 = ddValue[2]
+                    iWinner  = i
+        elif(nseedsNoFitMax3 < nseedsNoFit <= nseedsNoFitMax4):
+            if ((0.0 < ddValue[1] < 0.01) and (0.0 < ddValue[2] < 0.005)):
+                if ddValue[1] < ddValue1:
+                    ddValue0 = ddValue[0]
+                    ddValue1 = ddValue[1] 
+                    ddValue2 = ddValue[2]
+                    iWinner  = i
+        ### moderate multiplicity
+        elif(nseedsNoFitMax2 < nseedsNoFit <= nseedsNoFitMax3):
+            if ((0.0 < ddValue[1] < 0.01) and (0.0 < ddValue[2] < 0.008)):
+                if ddValue[1] < ddValue1:
+                    ddValue0 = ddValue[0]
+                    ddValue1 = ddValue[1] 
+                    ddValue2 = ddValue[2]
+                    iWinner  = i
+        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             ### energy < 4 GeV
             if pSeed.E() < 4.0:
                 if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.02)):
@@ -1048,8 +1082,30 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         
         
-        ### medium and high multiplicity
-        if(nseedsNoFit > nseedsNoFitMax2):
+        ### high multiplicity
+        if(nseedsNoFit > nseedsNoFitMax5):
+            if(pSeed.E() < 4.0):
+                if(d > 1.5*mm2m):
+                    return False, {}
+            else:
+                if(d > 0.8*mm2m):
+                    return False, {}
+        elif(nseedsNoFitMax4 < nseedsNoFit <= nseedsNoFitMax5):
+            if(pSeed.E() < 4.0):
+                if(d > 2*mm2m):
+                    return False, {}
+            else:
+                if(d > 1*mm2m):
+                    return False, {}
+        elif(nseedsNoFitMax3 < nseedsNoFit <= nseedsNoFitMax4):
+            if(pSeed.E() < 4.0):
+                if(d > 3*mm2m):
+                    return False, {}
+            else:
+                if(d > 2*mm2m):
+                    return False, {}
+        ### moderate multiplicity
+        elif(nseedsNoFitMax2 < nseedsNoFit <= nseedsNoFitMax3):
             if(pSeed.E() < 4.0):
                 if(d > 5*mm2m):
                     return False, {}
@@ -1100,7 +1156,21 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         
         
         ### checking the track pY
-        if(nseedsNoFit > nseedsNoFitMax):
+        ### high multiplicity
+        if(nseedsNoFit > nseedsNoFitMax5):
+            if(abs(pSeed.Py()) > 0.1*PseedMax): 
+                return False, {}
+        elif(nseedsNoFitMax4 < nseedsNoFit <= nseedsNoFitMax5):
+            if(abs(pSeed.Py()) > 0.3*PseedMax): 
+                return False, {}
+        elif(nseedsNoFitMax3 < nseedsNoFit <= nseedsNoFitMax4):
+            if(abs(pSeed.Py()) > 0.5*PseedMax): 
+                return False, {}
+        ### moderate multiplicity
+        elif(nseedsNoFitMax2 < nseedsNoFit <= nseedsNoFitMax3):
+            if(abs(pSeed.Py()) > 0.7*PseedMax): 
+                return False, {}
+        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(abs(pSeed.Py()) > PseedMax): 
                 return False, {}
         else:
