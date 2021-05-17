@@ -1312,9 +1312,9 @@ def main():
     
     hAllPossible              = TH1D("hAllPossible", "all possible track combination; bunch crossing; number of track combination", 9508, 0, 9508)
     hSeedPossible             = TH1D("hSeedPossible", "seed track combination; bunch crossing; number of seed track", 9508, 0, 9508)
-    hSeedMultiplicity         = TH1D("hSeedMultiplicity", "seed multiplicity; number of seeds; BX", 2000, 0, 2000)
-    hSeedMultiplicityPrelim   = TH1D("hSeedMultiplicityPrelim", "seed multiplicity prelim; number of seeds; BX", 2000, 0, 2000)
-    hSignalMultiplicity       = TH1D("hSignalMultiplicity", "number of signals; number of signals; BX", 2000, 0, 2000)
+    hSeedMultiplicity         = TH1D("hSeedMultiplicity", "seed multiplicity; number of seeds; BX", 20000000, 0, 20000000)
+    hSeedMultiplicityPrelim   = TH1D("hSeedMultiplicityPrelim", "seed multiplicity prelim; number of seeds; BX", 20000000, 0, 20000000)
+    hSignalMultiplicity       = TH1D("hSignalMultiplicity", "number of signals; number of signals; BX", 20000000, 0, 20000000)
     hXLayer4XDipole           = TH2D("hXLayer4XDipole", "number of signal distribution; x_{Dipole} [mm]; x_{Layer4}",330,0,330,650,0,650)
     hXExitYExit               = TH2D("hXExitYExit", "track distribution; x_{Exit} [mm]; y_{Exit} [mm]",650,0,650,40,-10,10)
     hSigEnergy                = TH1D("hSigEnergy", "signal energy; Energy [GeV]; Entries", 200, 0, 20)
