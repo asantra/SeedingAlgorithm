@@ -11,11 +11,30 @@ import argparse
 
 
 def main():
-    listOfTracks = [1, 5, 10, 20, 30, 50, 80, 100, 130, 150, 170, 185, 200, 220]
+    
+    parser = argparse.ArgumentParser(description='Code to find seed tracks')
+    parser.add_argument('-p', action="store", dest="Particle", type=str, default="Positron")
+    parser.add_argument('-process', action="store", dest="Process", type=str, default="hics")
+    args = parser.parse_args()
+    
+    particle     = args.Particle
+    process      = args.Process
+    
+    if(process == "hics"):
+        ### low signal multiplicity tracks
+        #listOfTracks = [1, 5, 10, 20, 30, 50, 80, 100, 130, 150, 170, 185, 200, 220]
+        #outFileName  = "hybridSVDCutsNumbersUpdated.csv"
+        ### high signal multiplicity tracks
+        listOfTracks = [250, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500]
+        outFileName  = "hybridSVDCutsNumbersUpdatedELaserHighMultiplicity.csv"
+    else:
+        listOfTracks = [1, 4, 7, 10, 13, 16]
+        outFileName  = "hybridSVDCutsNumbersgPlusLaser"+particle+".csv"
+        
     bxList       = [1,2,3,4]
     inDirectory  = "." #"LooseSVDanddCuts_December29_2020"
     
-    outCSVFile   = open("hybridSVDCutsNumbersUpdated.csv", "w")
+    outCSVFile   = open(outFileName, "w")
     suffixToRootFile = "WithFit3or4HitsTracksAndDistanceCut"
     
     trackList = {}
@@ -25,11 +44,29 @@ def main():
         seedMultiplicityPrelimBkg    = 0
         seedMultiplicityPrelimCombi  = 0
         for bx in bxList:
-            rootFileName = "seedingInformation_BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
-            
-            rootFileNameOnlySignal = "seedingInformation_BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_OnlySignal_PositronSide_"+suffixToRootFile+".root"
-            
-            rootFileOnlyBackground = "seedingInformation_EBeamOnlyWIS_DividedByBX"+str(bx)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
+            if(process == "hics"):
+                ##### this is for electron beam plus laser case
+                ##rootFileName = "seedingInformation_BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
+                
+                ##rootFileNameOnlySignal = "seedingInformation_BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_OnlySignal_PositronSide_"+suffixToRootFile+".root"
+                
+                ##rootFileOnlyBackground = "seedingInformation_EBeamOnlyWIS_DividedByBX"+str(bx)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
+                
+                
+                rootFileName = "seedingInformationFiles/seedingInformation_BkgEBeam_SignalPositronhics3000nm_jeti40_122020_9550dac4_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
+                
+                rootFileNameOnlySignal = "seedingInformationFiles/seedingInformation_BkgEBeam_SignalPositronhics3000nm_jeti40_122020_9550dac4_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_OnlySignal_PositronSide_"+suffixToRootFile+".root"
+                
+                rootFileOnlyBackground = "seedingInformationFiles/seedingInformation_ePlusLaserBkgKaptonWindowNewSamplesMarch62021_DividedByBX"+str(bx)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_PositronSide_"+suffixToRootFile+".root"
+                
+            else:
+                #### this is for g+laser beam case
+                
+                rootFileName = "seedingInformation_BkgGBeam_Signal"+particle+"bppp3000nmOr5000nm_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_"+particle+"Side_"+suffixToRootFile+".root"
+                
+                rootFileNameOnlySignal = "seedingInformation_BkgGBeam_Signal"+particle+"bppp3000nmOr5000nm_BX"+str(bx)+"_SignalTracks"+str(tracks)+"_trackInfoClean_VariableEnergyCut_OnlySignal_"+particle+"Side_"+suffixToRootFile+".root"
+                
+                rootFileOnlyBackground = "seedingInformation_gPlusLaserBkgNewSamplesJan262021_DividedByBX"+str(bx)+"_trackInfoClean_VariableEnergyCut_SignalAndBackground_"+particle+"Side_"+suffixToRootFile+".root"
             
             inRootFile                       = TFile(inDirectory+"/"+rootFileName)
             inRootFileSignal                 = TFile(inDirectory+"/"+rootFileNameOnlySignal)
@@ -56,7 +93,7 @@ def main():
             
             ### irrespective of signal+background combination
             trueSignal = 0
-            for nxBins in xrange(0, hSignalMultiplicity.GetNbinsX()+1):
+            for nxBins in range(hSignalMultiplicity.GetNbinsX()+1):
                 if(hSignalMultiplicity.GetBinContent(nxBins)!=0):
                     trueSignal = (nxBins - 1)
                     break
@@ -64,7 +101,7 @@ def main():
             #### find the seeds before the fit
             ### signal case
             prelimSigMultiSignal = 0
-            for nxBins in xrange(0, hSeedMultiplicityPrelimSignal.GetNbinsX()+1):
+            for nxBins in range(hSeedMultiplicityPrelimSignal.GetNbinsX()+1):
                 if(hSeedMultiplicityPrelimSignal.GetBinContent(nxBins)!=0):
                     prelimSigMultiSignal = (nxBins - 1)
                     break
@@ -72,7 +109,7 @@ def main():
             seedMultiplicityPrelimSignal += prelimSigMultiSignal
             ### background case
             prelimSigMultiBkg = 0
-            for nxBins in xrange(0, hSeedMultiplicityPrelimBkg.GetNbinsX()+1):
+            for nxBins in range(hSeedMultiplicityPrelimBkg.GetNbinsX()+1):
                 if(hSeedMultiplicityPrelimBkg.GetBinContent(nxBins)!=0):
                     prelimSigMultiBkg = (nxBins - 1)
                     break
@@ -80,7 +117,7 @@ def main():
             seedMultiplicityPrelimBkg += prelimSigMultiBkg
             ### signal and background case
             prelimSigMultiCombi = 0
-            for nxBins in xrange(0, hSeedMultiplicityPrelim.GetNbinsX()+1):
+            for nxBins in range(hSeedMultiplicityPrelim.GetNbinsX()+1):
                 if(hSeedMultiplicityPrelim.GetBinContent(nxBins)!=0):
                     prelimSigMultiCombi = (nxBins - 1)
                     break
@@ -96,10 +133,13 @@ def main():
         ### storing the values in the ditionary
         trackList[tracks] = bxValueList
         trackList[tracks].update({"prelimSeedSignal": str(avgPrelimSeedMultiSignal), "prelimSeedBkg": str(avgPrelimSeedMultiBkg), "prelimSeedCombined": str(avgPrelimSeedMultiCombined)})
+        
+        #pprint.pprint(trackList)
            
     
-    ### first print the background
-    outCSVFile.write(",,,,"+trackList[1][1]["bkgOnlyInclusive"]+","+trackList[1][1]["bkgOnlyTight"]+","+trackList[1][1]["bkgOnlyLoose"]+",,,,"+trackList[1][2]["bkgOnlyInclusive"]+","+trackList[1][2]["bkgOnlyTight"]+","+trackList[1][2]["bkgOnlyLoose"]+",,,,"+trackList[1][3]["bkgOnlyInclusive"]+","+trackList[1][3]["bkgOnlyTight"]+","+trackList[1][3]["bkgOnlyLoose"]+",,,,"+trackList[1][4]["bkgOnlyInclusive"]+","+trackList[1][4]["bkgOnlyTight"]+","+trackList[1][4]["bkgOnlyLoose"]+"\n")
+
+    firstTrack = listOfTracks[0]
+    outCSVFile.write(",,,,"+trackList[firstTrack][1]["bkgOnlyInclusive"]+","+trackList[firstTrack][1]["bkgOnlyTight"]+","+trackList[firstTrack][1]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][2]["bkgOnlyInclusive"]+","+trackList[firstTrack][2]["bkgOnlyTight"]+","+trackList[firstTrack][2]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][3]["bkgOnlyInclusive"]+","+trackList[firstTrack][3]["bkgOnlyTight"]+","+trackList[firstTrack][3]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][4]["bkgOnlyInclusive"]+","+trackList[firstTrack][4]["bkgOnlyTight"]+","+trackList[firstTrack][4]["bkgOnlyLoose"]+"\n")
     
     for tracks in listOfTracks:
         #print trackList[tracks][1][0], " ", trackList[tracks][1][1], " ", trackList[tracks][1][2], " ", trackList[tracks][1][3]

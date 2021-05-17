@@ -7,9 +7,124 @@ from Functions import *
 import pprint
 
 
+
+def DrawHistsRatio(FirstTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, xaxisTitle, CanvasName, h2, yline1low, yline1up, drawline=False, logy=False, LatexName='', LatexName2='', TeVTag=False, doSumw2=False, doAtlas=False, doLumi=False, noRatio=False, do80=False, do59=False):
+   Tex = MakeLatex(0.44,0.79,LatexName)
+   Tex2 = MakeLatex(0.48,0.70,LatexName2)
+   c = TCanvas("c","c",900, 900)
+   #c.SetGrid(0)
+   pad1 = TPad('pad1','pad1',0,0.25,1,1)
+   pad1.SetBottomMargin(0.0)
+   pad1.SetFillStyle(0)
+   #pad1.SetGrid(0)
+   pad1.Draw()
+   pad1.cd()
+   gStyle.SetOptStat(0)
+   if(logy):
+     pad1.SetLogy()
+     
+   line = MakeLine(xrange1down,yline1low,xrange1up,yline1up)
+   legend1 = LegendMaker()
+   tex1 = TLatex(); tex2 = TLatex(); tex3 = TLatex()
+   L = [tex1, tex2, tex3]
+   TexMaker(L, doAtlas, doLumi, noRatio, do80, do59)
+   FirstTH1[0].GetYaxis().SetRangeUser(yrange1down,yrange1up)
+   FirstTH1[0].GetXaxis().SetRangeUser(xrange1down,xrange1up)
+   WaterMark = TexWaterMark('Preliminary')
+   for i in range(0, len(FirstTH1)):
+     FirstTH1[i].SetTitle("")
+     FirstTH1[i].GetYaxis().SetTitle(FirstTH1[i].GetYaxis().GetTitle())#(FirstTH1[i].GetYaxis().GetTitle())
+     FirstTH1[i].GetYaxis().SetTitleOffset(0.95)
+     FirstTH1[i].GetYaxis().SetTitleSize(0.05)
+     FirstTH1[i].GetYaxis().SetLabelSize(0.045)
+     FirstTH1[i].GetXaxis().SetTitle("")
+     FirstTH1[i].GetXaxis().SetLabelSize(0.15)
+     
+     #w = FirstTH1[i].Integral()
+     ### comment in if you want only shape distribution
+     #FirstTH1[i].Scale(1.0/w)
+     FirstTH1[i] = SetHistColorEtc(FirstTH1[i], PlotColor[i])
+     FirstTH1[i].SetMarkerSize(1)
+     FirstTH1[i].SetMarkerStyle(20)
+     if(i==0):legend1.AddEntry(FirstTH1[i],LegendName[i], "f")
+     else: legend1.AddEntry(FirstTH1[i],LegendName[i], "lp")
+   
+   FirstTH1[0].GetXaxis().SetLabelSize(0.0);
+   FirstTH1[0].GetYaxis().SetTitle("Tracks/BX");
+   FirstTH1[0].SetFillColor(PlotColor[0])
+   FirstTH1[0].Draw("hist")
+   #WaterMark.Draw("sames")
+   gPad.SetTickx()
+   gPad.SetTicky()
+   gPad.Modified(); gPad.Update();
+   for i in xrange(1, len(FirstTH1)):
+     FirstTH1[i].Draw("lp sames")  
+     gPad.Modified(); gPad.Update();
+   #FirstTH1[0].Draw("ep sames")
+   gPad.RedrawAxis()
+   L[1].Draw("sames")
+   L[2].Draw("sames")
+   if(TeVTag):
+       TexTeV = TLatex(0.892,0.914,"#sqrt{s}=13 TeV")#36.075 fb^{-1} (13 TeV)
+       TexTeV.SetNDC()
+       TexTeV.SetTextAlign(31)
+       TexTeV.SetTextFont(42)
+       TexTeV.SetTextSize(0.037)
+       TexTeV.SetLineWidth(2) 
+       TexTeV.Draw()
+   else:
+       L[0].Draw()
+   LUXELabel(0.25,0.85,"CDR")
+   legend1.Draw("sames")
+   Tex.Draw("sames")
+   Tex2.Draw("sames")
+   
+   c.cd()
+   pad2 = TPad("pad2", "pad2",0.0,0.0,1.0,0.245)
+   pad2.SetTopMargin(0.0)
+   pad2.SetBottomMargin(0.3)
+   pad2.SetFillStyle(0)
+   pad2.SetGrid(0)
+   pad2.Draw()
+   pad2.cd()
+   gStyle.SetOptStat(0)
+   gPad.SetTickx()
+   gPad.SetTicky()
+   
+   if(doSumw2):
+       for i in xrange(0, len(FirstTH1)):
+          FirstTH1[i].Sumw2() 
+   
+   h2.Divide(FirstTH1[1],FirstTH1[0])
+   h2.GetXaxis().SetRangeUser(xrange1down,xrange1up)
+   h2.GetXaxis().SetTitle(xaxisTitle)
+   h2.GetYaxis().SetTitle(h2.GetYaxis().GetTitle())
+   h2.GetYaxis().CenterTitle()
+   h2.SetTitle('')
+   h2 = OneRatioAxisSize(h2)
+   h2.GetYaxis().SetRangeUser(0., 2.4)
+   h2.GetYaxis().SetNdivisions(6)
+   h2.SetLineColor(kBlack)
+   h2.SetMarkerColor(kBlack)
+   h2.SetMarkerStyle(20)
+   h2.SetMarkerSize(1)
+   h2.SetLineStyle(1)
+   h2.Draw("ep")
+   if(drawline):
+     line.Draw()
+     
+   SaveFile(c, CanvasName)
+   c.Clear()
+     
+     
+
 def main():
+    gROOT.LoadMacro("LuxeStyle.C")
+    gROOT.LoadMacro("LuxeLabels.C")
     gROOT.SetBatch()
-    directory = "FitTightAndLoosePlots_HybridSVDanddCuts_December29_2020"  ## _LooseSVDanddCuts_December29_2020
+    SetLuxeStyle()
+    gROOT.SetBatch()
+    directory = "RecoAndTruthEnergy_Jan142021"  ## _LooseSVDanddCuts_December29_2020
     if not os.path.exists(directory):
         os.makedirs(directory)
     # give the signal sample you want to use, old with less signal tracks or new with more signal tracks
@@ -276,6 +391,17 @@ def main():
     DrawHistsRatioFour(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/energyDistributionSeedAndSignalLoose_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, h3, yline1low, yline1up, drawline, logy, False, False, latexName, latexName2, latexName3, latexName4, latexName5, h4, h5, energyPlots)
     
     
+    
+    SecondTH1 = [hSignalEnergyBX1, hSeedEnergyTight_signalAndBackgroundBX1]
+
+    PlotColor = [kGray, kBlack]
+    LegendName = ['Signal positrons','Reconstructed tracks']
+    
+    #DrawHistsRatioFour(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/energyDistributionSeedAndSignalTightReco_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, h3, yline1low, yline1up, drawline, logy, False, False, latexName, latexName2, latexName3, latexName4, latexName5, h4, h5, energyPlots)
+    
+    
+    
+    DrawHistsRatio(SecondTH1, LegendName, PlotColor, xrange1down, xrange1up, 2e-1, 2e2, "E [GeV]", directory+"/energyDistributionSeedAndSignalTightReco_WithRatio_nTracks"+args.nTracks+"_"+plotSuffix, h2, yline1low, yline1up, drawline, logy, "e+laser (5 #mum)")
     
     
     

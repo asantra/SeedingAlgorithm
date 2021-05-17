@@ -11,19 +11,27 @@ import argparse
 
 
 def main():
-    numberTxtFile      = int(sys.argv[1])
-    signalTracksNumber = int(sys.argv[2])
-    bkgFileName   = open("EBeamOnlyWIS_DividedByBX"+str(numberTxtFile)+"_trackInfoClean.txt")
-    sigFileName   = open("list_root_hics_165gev_w0_5000nm_provisional_10xi3_6cee466a_trackInfoClean.txt")
-    #sigFileName   = open("list_root_hics_165gev_w0_8000nm_provisional_10xi3_6cee466a_trackInfoClean.txt")
-    #sigFileName   = open("list_root_hics_165gev_w0_3000nm_WIS_trackInfoClean.txt")
+    bxNumberWanted      = int(sys.argv[1])
+    signalTracksNumber  = int(sys.argv[2])
     
-    #outFile       = open("BkgEBeam_SignalHics5000nmProvisional_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
-    #outFile       = open("BkgEBeam_SignalHics8000nmProvisional_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
-    #outFile       = open("BkgEBeam_SignalHics3000nmOldReverse_BX"+str(numberTxtFile)+"_trackInfoClean.txt","w")
-    outFile       = open("BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(numberTxtFile)+"_SignalTracks"+str(signalTracksNumber)+"_trackInfoClean.txt","w")
+    ### hics signal
+    bkgFileName   = open("NewSamplesEBeamOnlyFilesMar62021/ePlusLaserBkgKaptonWindowNewSamplesMarch62021_DividedByBX"+str(bxNumberWanted)+"_trackInfoClean.txt")
+    sigFileName   = open("../Outputfile/list_root_hics_165gev_w0_3000nm_jeti40_122020_9550dac4_trackInfoClean.txt")
+    outFile       = open("BkgEBeam_SignalPositronhics3000nm_jeti40_122020_9550dac4_BX"+str(bxNumberWanted)+"_SignalTracks"+str(signalTracksNumber)+"_trackInfoClean.txt","w")
     
-    ### write the bkg as it is
+    
+    ## outFile       = open("BkgEBeam_SignalHics5000nmProvisional_BX"+str(bxNumberWanted)+"_trackInfoClean.txt","w")
+    ## outFile       = open("BkgEBeam_SignalHics8000nmProvisional_BX"+str(bxNumberWanted)+"_trackInfoClean.txt","w")
+    ## outFile       = open("BkgEBeam_SignalHics3000nmOldReverse_BX"+str(bxNumberWanted)+"_trackInfoClean.txt","w")
+    ## outFile       = open("BkgEBeam_SignalHics3000nmOldForSignalMultiplicityLessThan20Or5000nmForSignalMultiplicityMoreThan20_BX"+str(bxNumberWanted)+"_SignalTracks"+str(signalTracksNumber)+"_trackInfoClean.txt","w")
+    
+    
+    #### bppp signal
+    #bkgFileName   = open("NewSamplesGPlusLaserBkgFilesJan262021/gPlusLaserBkgNewSamplesJan262021_DividedByBX"+str(bxNumberWanted)+"_trackInfoClean.txt")
+    #sigFileName   = open("list_root_hics_165gev_w0_3000nm_jeti40_122020_9550dac4_trackInfoClean.txt")
+    #outFile       = open("BkgGBeam_SignalPositronbppp3000nmOr5000nm_BX"+str(bxNumberWanted)+"_SignalTracks"+str(signalTracksNumber)+"_trackInfoClean.txt","w")
+    
+    ## write the bkg as it is
     for lines in bkgFileName.readlines():
         outFile.write(lines)
     print("Printed bkg to mix")
@@ -47,13 +55,13 @@ def main():
         
     ### count the number of signal positrons in each BX and then put BX: number of signals in a dictionary
     print("Now counting signals in each BX")
-    outRootFile = TFile("signalTrackMultiplicity_w0_5000nm_provisional_BX"+str(numberTxtFile)+".root", "RECREATE")
+    outRootFile = TFile("signalTrackMultiplicityhics_w0_3000nm_jeti40_122020_9550dac4_BX"+str(bxNumberWanted)+".root", "RECREATE")
     outRootFile.cd()
     signalTrackMultiplicity = TH1F("signalTrackMultiplicity", "track multiplicity; number of tracks; BX",80, 0, 400)
     signalNumber     = {}
-    for bx in range(0,494):
+    for bx in range(0,1001+1):
         counter = 0
-        print("BX: ", bx)
+        if(bx%100==0): print("BX: ", bx)
         for tracks in position:
             if tracks[0] == bx:
                 if(tracks[1] == -11 and tracks[2] == 1 and (tracks[3]==1000 or tracks[3]==1001)):
@@ -69,23 +77,30 @@ def main():
     ### write one bx of signal to the output file
     writeNumber = 0
     for key in sortedSignalNumber:
-        print(key,sortedSignalNumber[key])
+        if key==0:
+            continue
+            
+        #print(key,sortedSignalNumber[key])
         
         #### select the number of tracks in each signal BX
         ##about 1 track, 5 tracks, 10 tracks, 20 tracks , 50 tracks, 100 tracks, 200 tracks, 500 tracks
         ### give a spread of 5 for each BX for low signal multiplicity
-        if((signalTracksNumber - 5) < sortedSignalNumber[key] < (signalTracksNumber+5)):
+        if((signalTracksNumber - 200) < sortedSignalNumber[key] < (signalTracksNumber+400)):
             writeNumber += 1
         signalTrackMultiplicity.Fill(sortedSignalNumber[key])
-        if(writeNumber!=numberTxtFile): continue
-        print("writing only the ",numberTxtFile," th signal BX")
+        if(writeNumber!=bxNumberWanted): continue
+        print("writing only the ",key," th signal BX, signalMultiplicity: ",sortedSignalNumber[key])
+        #print(particleInEachBX[key])
         for eachLine in particleInEachBX[key]:
+            #print("I am inside key loop: key is: ", key)
             findPDG     = int(eachLine.split()[1])
             findTrackId = int(eachLine.split()[2])
+            #print("findPDG: ", findPDG, " findTrackId: ", findTrackId)
             if findPDG == -11 and findTrackId == 1:
+                #print("I am writing")
                 outFile.write(eachLine+"\n")
-        ### just take the very first BX satisfying the condition
         break
+            
     
     outFile.close()
     outRootFile.Write()

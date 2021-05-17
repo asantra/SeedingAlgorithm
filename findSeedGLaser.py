@@ -16,7 +16,7 @@ import argparse
 import csv, array
 import numpy as np
 ### needed for plotting of tracks and dimension from the spreadsheet 
-from makeTrackDiagrams import *
+from makeTrackDiagramsGLaser import *
 
 ### the seed energy width
 EseedMin       = 2.0  # GeV
@@ -60,9 +60,9 @@ cutFlowDict = OrderedDict(
      ('x1Gtx4',0), 
      ('x1*x4Negative',0), 
      ('z1Eqz4', 0), 
-     ('yDipoleExitGt5p4',0), 
-     ('xDipoleExitLt25',0), 
-     ('xDipoleExitGt165', 0), 
+     ('yDipoleExitGt6p5',0), 
+     ('xDipoleExitLt20',0), 
+     ('xDipoleExitGt140', 0), 
      ('xDipoleExitLt0',0), 
      ('seedEnergy', 0),
      ('checkClusterTracksMiddleLayers', 0),
@@ -415,25 +415,24 @@ def getExpectedHits(r1, r4, energy, side):
     x3Inner            = xofz(r1, r4, z3inner)
     x3Outer            = xofz(r1, r4, z3outer)
     
-    for chipName, boundaries in xBoundaries.items(): 
-        #print(chipName)
+    for chipName, boundaries in xBoundaries.items():
         if(side=="Positron"):
-            if "layerid2" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
+            if "layerid2" in chipName and (boundaries[0] < x2Inner < boundaries[1]):
                 expectedHits2Inner += 1
-            if "layerid3" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
+            if "layerid3" in chipName and (boundaries[0] < x2Outer < boundaries[1]):
                 expectedHits2Outer += 1
-            if "layerid4" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
+            if "layerid4" in chipName and (boundaries[0] < x3Inner < boundaries[1]):
                 expectedHits3Inner += 1
-            if "layerid5" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
+            if "layerid5" in chipName and (boundaries[0] < x3Outer < boundaries[1]):
                 expectedHits3Outer += 1
         else:
-            if "layerid10" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
+            if "layerid10" in chipName and (boundaries[0] < x2Inner < boundaries[1]):
                 expectedHits2Inner += 1
-            if "layerid11" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
+            if "layerid11" in chipName and (boundaries[0] < x2Outer < boundaries[1]):
                 expectedHits2Outer += 1
-            if "layerid12" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
+            if "layerid12" in chipName and (boundaries[0] < x3Inner < boundaries[1]):
                 expectedHits3Inner += 1
-            if "layerid13" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
+            if "layerid13" in chipName and (boundaries[0] < x3Outer < boundaries[1]):
                 expectedHits3Outer += 1
     
     
@@ -986,16 +985,16 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     ### the following cannot be 10.8mm/2 according to the signal tracks
     if(abs(yDipoleExit) > yDipoleExitMax/2):
         return False, {}
-    cutFlowDict['yDipoleExitGt5p4'] += 1
+    cutFlowDict['yDipoleExitGt6p5'] += 1
     
     ### This is according to the signal x:y at the dipole exit
     if(abs(xDipoleExit) < xDipoleExitMin/2):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
-    cutFlowDict['xDipoleExitLt25'] += 1
+    cutFlowDict['xDipoleExitLt20'] += 1
     
     if(abs(xDipoleExit) > xDipoleExitMax/2):
         return False, {}
-    cutFlowDict['xDipoleExitGt165'] += 1
+    cutFlowDict['xDipoleExitGt140'] += 1
 
     ### select only positive x or negative x accroding to the particle
     if( (side=="Positron" and xDipoleExit < 0) or (side=="Electron" and xDipoleExit > 0)):
@@ -1075,8 +1074,12 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
                 return False, {}
         ### for electron side    
         else:
-            if(d > 30*mm2m):
-                return False, {}
+            if(nseedsNoFit < nseedsNoFitMax):
+                if(d > 10*mm2m):
+                    return False, {}
+            else:
+                if(d > 40*mm2m):
+                    return False, {}
 
                 
         cutFlowDict['checkClusterXDistance'] += 1
@@ -1092,10 +1095,10 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### for electron side        
         else:
             if(nseedsNoFit < nseedsNoFitMax):
-                if(abs(pSeed.Py()) > PseedMax*2): 
+                if(abs(pSeed.Py()) > PseedMax*4): 
                     return False, {}
             else:
-                if(abs(pSeed.Py()) > PseedMax*10): 
+                if(abs(pSeed.Py()) > PseedMax*40): 
                     return False, {}
             
             
@@ -1202,7 +1205,7 @@ def main():
         suffixName          = inTextFile.split('.')[0]
     
     
-    outFile                   = TFile("seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root", "RECREATE")
+    outFile                   = TFile("seedingInformationFiles/seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root", "RECREATE")
     outFile.cd()
     
     hAllPossible              = TH1D("hAllPossible", "all possible track combination; bunch crossing; number of track combination", 9508, 0, 9508)
@@ -1255,11 +1258,11 @@ def main():
         nBX          = 160
         checkBXMatch = True
     elif 'ePlusLaserBkgNewSamples' in inTextFile:
-        nBX          = 139
+        nBX          = 281
         checkBXMatch = True
     ### g+laser background
     elif 'gPlusLaserBkgNewSamples' in inTextFile:
-        nBX          = 129
+        nBX          = 299
         checkBXMatch = True
     ### all other cases
     else:
@@ -1295,6 +1298,7 @@ def main():
             continue
         failVtxCut = checkVtxCut(vtx_x, vtx_z)
         ### required to suppress unwanted background
+        if(-3000 < vtx_z < -1500):continue
         #if(vtx_x < -25.5 and (vtx_z > 3600 and vtx_z < 4600)): continue
         #if(failVtxCut): continue
         ### ask for variable energy cut, energyAfterCut is in keV
@@ -1326,7 +1330,7 @@ def main():
         allR1Outer = []; allR2Outer = []; allR3Outer = []; allR4Outer = []
         
         for values in eachBXValue:
-            ### x, y, z and E
+            ### x, y, z and E, weight, vtx_x, vtx_y, vtx_z
             if(side=="Positron"):
                 if (values[2] == 0):
                     allR1Inner.append([values[3], values[4], z1inner, values[5], values[6], values[7], values[8], values[9]])
@@ -1457,7 +1461,7 @@ def main():
                         xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                         xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                         hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
-                        if(False and winnerDict['nMatched'] >= 3):
+                        if(True and winnerDict['nMatched'] == 4):
                             
                             print("nMatched: ", winnerDict['nMatched'], " nExpected: ", winnerDict['nExpected'])
                             print("vertex positions first layer: xpos ", r1[0], " ypos ", r1[1], " energy ", r1[3], " vtx_x ", r1[5], " vtx_y ", r1[6], " vtx_z ", r1[7])
@@ -1528,8 +1532,8 @@ def main():
     for seedTrack in allSeedsTrackLines:
         seedTrack.Draw()
     for sensor in sensors: sensor.Draw()
-    cnv.SaveAs("trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".pdf")
-    cnv.SaveAs("trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root")
+    cnv.SaveAs("trackingDiagramsFiles/trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".pdf")
+    cnv.SaveAs("trackingDiagramsFiles/trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root")
     pprint.pprint(cutFlowDict)
 
 

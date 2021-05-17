@@ -20,7 +20,7 @@ from makeTrackDiagrams import *
 
 ### the seed energy width
 EseedMin       = 2.0  # GeV
-EseedMax       = 15.0 # GeV
+EseedMax       = 13.0 # GeV
 EseedMinPrelim = 0.2  # GeV
 EseedMaxPrelim = 18.0 # GeV
 
@@ -28,8 +28,6 @@ EseedMaxPrelim = 18.0 # GeV
 PseedMin = -0.005 # GeV
 PseedMax = 0.005 # GeV
 
-###
-xDipoleExitMax = 330.
 
 ### cut on nseeds
 nseedsNoFitMax  = 50
@@ -81,7 +79,53 @@ histos =  {'hSVDValues2Global': TH1D("hSVDValues2Global", "output of SVD[1]; fit
            'hSeedDistanceLooseGlobal': TH1D("hSeedDistanceLooseGlobal", "seed distance wrt analytical line (loose); d [m]; Entries", 500, 0, 0.10),
            'hSeedDistanceTightGlobal': TH1D("hSeedDistanceTightGlobal", "seed distance wrt analytical line (tight); d [m]; Entries", 500, 0, 0.10),
            'hSVDValues2TightVsEnergyGlobal': TH2D("hSVDValues2TightVsEnergyGlobal", "output of SVD[1]; Energy [GeV]; fit quality [1]; Events", 35, 0, 17.5, 100, 0, 0.3),
-           'hSeedDistanceTightVsEnergyGlobal': TH2D("hSeedDistanceTightVsEnergyGlobal", "seed distance wrt analytical line (tight) vs Energy; Energy [GeV]; d[m]; Entries", 35, 0, 17.5, 100, 0, 0.10)
+           'hSeedDistanceTightVsEnergyGlobal': TH2D("hSeedDistanceTightVsEnergyGlobal", "seed distance wrt analytical line (tight) vs Energy; Energy [GeV]; d[m]; Entries", 35, 0, 17.5, 100, 0, 0.10),
+           
+           ### d parameter N-1 plot
+           'hNminus1d_High_Multiplicity_ELt4_TrackInclusive': TH1D('hNminus1d_High_Multiplicity_ELt4_TrackInclusive', "outlier d, high multiplicity, E < 4, all tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_High_Multiplicity_EGt4_TrackInclusive': TH1D('hNminus1d_High_Multiplicity_EGt4_TrackInclusive', "outlier d, high multiplicity, E > 4, all tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Medium_Multiplicity_ELt4_TightTrack': TH1D('hNminus1d_Medium_Multiplicity_ELt4_TightTrack', "outlier d, medium multiplicity, E < 4, tight tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Medium_Multiplicity_EGt4_TightTrack': TH1D('hNminus1d_Medium_Multiplicity_EGt4_TightTrack', "outlier d, medium multiplicity, E > 4, tight tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Medium_Multiplicity_ELt4_LooseTrack': TH1D('hNminus1d_Medium_Multiplicity_ELt4_LooseTrack', "outlier d, medium multiplicity, E < 4, loose tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Medium_Multiplicity_EGt4_LooseTrack': TH1D('hNminus1d_Medium_Multiplicity_EGt4_LooseTrack', "outlier d, medium multiplicity, E > 4, loose tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Low_Multiplicity_ELt4_TightTrack': TH1D('hNminus1d_Low_Multiplicity_ELt4_TightTrack', "outlier d, low multiplicity, E < 4, tight tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Low_Multiplicity_EGt4_TightTrack': TH1D('hNminus1d_Low_Multiplicity_EGt4_TightTrack', "outlier d, low multiplicity, E > 4, tight tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Low_Multiplicity_ELt4_LooseTrack': TH1D('hNminus1d_Low_Multiplicity_ELt4_LooseTrack', "outlier d, low multiplicity, E < 4, loose tracks; d[m]; Entries", 500, 0, 0.10),
+           'hNminus1d_Low_Multiplicity_EGt4_LooseTrack': TH1D('hNminus1d_Low_Multiplicity_EGt4_LooseTrack', "outlier d, low multiplicity, E > 4, loose tracks; d[m]; Entries", 500, 0, 0.10),
+           
+           #### p_Y parameter N-1 plots
+           'hNminus1Py_High_Medium_Multiplicity_EInclusive_TrackInclusive': TH1D('hNminus1Py_High_Medium_Multiplicity_EInclusive_TrackInclusive', "track p_{Y}, high and medium multiplicity, All E, All Tracks; p'_Y [GeV]; Entries",100, -0.02, 0.02),
+           'hNminus1Py_Low_Multiplicity_ELt4_TightTracks': TH1D('hNminus1Py_Low_Multiplicity_ELt4_TightTracks', "track p_{Y}, low multiplicity, E < 4, tight tracks; p'_Y [GeV]; Entries",100, -0.02, 0.02),
+           'hNminus1Py_Low_Multiplicity_ELt4_LooseTracks': TH1D('hNminus1Py_Low_Multiplicity_ELt4_LooseTracks', "track p_{Y}, low multiplicity, E < 4, loose tracks; p'_Y [GeV]; Entries",100, -0.02, 0.02),
+           'hNminus1Py_Low_Multiplicity_EGt4_TightTracks': TH1D('hNminus1Py_Low_Multiplicity_EGt4_TightTracks', "track p_{Y}, low multiplicity, E > 4, tight tracks; p'_Y [GeV]; Entries",100, -0.02, 0.02),
+           'hNminus1Py_Low_Multiplicity_EGt4_LooseTracks': TH1D('hNminus1Py_Low_Multiplicity_EGt4_LooseTracks', "track p_{Y}, low multiplicity, E > 4, loose tracks; p'_Y [GeV]; Entries",100, -0.02, 0.02),
+           
+           ### fit parameter N-1 plots
+           'hNminus1FitPar1_High_Multiplicity_ELt4_TrackInclusive': TH1D('hNminus1FitPar1_High_Multiplicity_ELt4_TrackInclusive','output of SVD[1], high multiplicity, E < 4, inclusive tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_High_Multiplicity_ELt4_TrackInclusive': TH1D('hNminus1FitPar2_High_Multiplicity_ELt4_TrackInclusive','output of SVD[2], high multiplicity, E < 4, inclusive tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_High_Multiplicity_EGt4_TrackInclusive': TH1D('hNminus1FitPar1_High_Multiplicity_EGt4_TrackInclusive','output of SVD[1], high multiplicity, E > 4, inclusive tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_High_Multiplicity_EGt4_TrackInclusive': TH1D('hNminus1FitPar2_High_Multiplicity_EGt4_TrackInclusive','output of SVD[2], high multiplicity, E > 4, inclusive tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_Medium_Multiplicity_ELt4_TrackInclusive': TH1D('hNminus1FitPar1_Medium_Multiplicity_ELt4_TrackInclusive','output of SVD[1], Medium multiplicity, E < 4, inclusive tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Medium_Multiplicity_ELt4_TrackInclusive': TH1D('hNminus1FitPar2_Medium_Multiplicity_ELt4_TrackInclusive','output of SVD[2], Medium multiplicity, E < 4, inclusive tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_Medium_Multiplicity_EGt4_TrackInclusive': TH1D('hNminus1FitPar1_Medium_Multiplicity_EGt4_TrackInclusive','output of SVD[1], Medium multiplicity, E > 4, inclusive tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Medium_Multiplicity_EGt4_TrackInclusive': TH1D('hNminus1FitPar2_Medium_Multiplicity_EGt4_TrackInclusive','output of SVD[2], Medium multiplicity, E > 4, inclusive tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           
+           'hNminus1FitPar1_Low_Multiplicity_ELt4_TightTrack': TH1D('hNminus1FitPar1_Low_Multiplicity_ELt4_TightTrack','output of SVD[1], low multiplicity, E < 4, tight tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Low_Multiplicity_ELt4_TightTrack': TH1D('hNminus1FitPar2_Low_Multiplicity_ELt4_TightTrack','output of SVD[2], low multiplicity, E < 4, tight tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_Low_Multiplicity_EGt4_TightTrack': TH1D('hNminus1FitPar1_Low_Multiplicity_EGt4_TightTrack','output of SVD[1], low multiplicity, E > 4, tight tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Low_Multiplicity_EGt4_TightTrack': TH1D('hNminus1FitPar2_Low_Multiplicity_EGt4_TightTrack','output of SVD[2], low multiplicity, E > 4, tight tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_Low_Multiplicity_ELt4_LooseTrack': TH1D('hNminus1FitPar1_Low_Multiplicity_ELt4_LooseTrack','output of SVD[1], low multiplicity, E < 4, Loose tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Low_Multiplicity_ELt4_LooseTrack': TH1D('hNminus1FitPar2_Low_Multiplicity_ELt4_LooseTrack','output of SVD[2], low multiplicity, E < 4, Loose tracks; fit quality [2]; Events', 2000, -0.2, 0.2),
+           
+           'hNminus1FitPar1_Low_Multiplicity_EGt4_LooseTrack': TH1D('hNminus1FitPar1_Low_Multiplicity_EGt4_LooseTrack','output of SVD[1], low multiplicity, E > 4, Loose tracks; fit quality [1]; Events', 200, 0, 0.3),
+           'hNminus1FitPar2_Low_Multiplicity_EGt4_LooseTrack': TH1D('hNminus1FitPar2_Low_Multiplicity_EGt4_LooseTrack','output of SVD[2], low multiplicity, E > 4, Loose tracks; fit quality [2]; Events', 2000, -0.2, 0.2)
+           
            }
 
 
@@ -370,7 +414,7 @@ def drawFit(name,linepts,hits):
     cnv.SaveAs(name)
    
 ### get the expected number of hits in the layer 2 and layer 3 of the tracker given the position of the track
-def getExpectedHits(r1, r4, energy, side):
+def getExpectedHits(r1, r4, energy):
     global xAbsMargins, yAbsMargins
     
     if(energy < 4.0):
@@ -412,25 +456,15 @@ def getExpectedHits(r1, r4, energy, side):
     x3Inner            = xofz(r1, r4, z3inner)
     x3Outer            = xofz(r1, r4, z3outer)
     
-    for chipName, boundaries in xBoundaries.items():
-        if(side=="Positron"):
-            if "layerid2" in chipName and (boundaries[0] < x2Inner < boundaries[1]):
-                expectedHits2Inner += 1
-            if "layerid3" in chipName and (boundaries[0] < x2Outer < boundaries[1]):
-                expectedHits2Outer += 1
-            if "layerid4" in chipName and (boundaries[0] < x3Inner < boundaries[1]):
-                expectedHits3Inner += 1
-            if "layerid5" in chipName and (boundaries[0] < x3Outer < boundaries[1]):
-                expectedHits3Outer += 1
-        else:
-            if "layerid10" in chipName and (boundaries[0] < x2Inner < boundaries[1]):
-                expectedHits2Inner += 1
-            if "layerid11" in chipName and (boundaries[0] < x2Outer < boundaries[1]):
-                expectedHits2Outer += 1
-            if "layerid12" in chipName and (boundaries[0] < x3Inner < boundaries[1]):
-                expectedHits3Inner += 1
-            if "layerid13" in chipName and (boundaries[0] < x3Outer < boundaries[1]):
-                expectedHits3Outer += 1
+    for chipName, boundaries in xBoundaries.items(): 
+        if "layerid2" in chipName and x2Inner > boundaries[0] and x2Inner < boundaries[1]:
+            expectedHits2Inner += 1
+        if "layerid3" in chipName and x2Outer > boundaries[0] and x2Outer < boundaries[1]:
+            expectedHits2Outer += 1
+        if "layerid4" in chipName and x3Inner > boundaries[0] and x3Inner < boundaries[1]:
+            expectedHits3Inner += 1
+        if "layerid5" in chipName and x3Outer > boundaries[0] and x3Outer < boundaries[1]:
+            expectedHits3Outer += 1
     
     
     return expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer
@@ -441,7 +475,7 @@ def getExpectedHits(r1, r4, energy, side):
 ### check if there are hits along one track in layer 2 and layer 3
 def check_clusters(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, energy):
     global ddList, xAbsMargins, yAbsMargins
-    expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer = getExpectedHits(r1, r4, energy, side)
+    expectedHits2Inner, expectedHits2Outer, expectedHits3Inner, expectedHits3Outer = getExpectedHits(r1, r4, energy)
     hitsOnRoad2Inner = 0   ### how many tracks accepted in the road along the r1 and r4
     hitsOnRoad2Outer = 0
     hitsOnRoad3Inner = 0   ### how many tracks accepted in the road along the r1 and r4
@@ -799,6 +833,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         if(nseedsNoFit > nseedsNoFitMax2):
             ### energy < 4 GeV
             if pSeed.E() < 4.0:
+                histos['hNminus1FitPar1_High_Multiplicity_ELt4_TrackInclusive'].Fill(ddValue[1])
+                histos['hNminus1FitPar2_High_Multiplicity_ELt4_TrackInclusive'].Fill(ddValue[2])
                 if ((0.0 < ddValue[1] < 0.08) and (0.0 < ddValue[2] < 0.02)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
@@ -807,6 +843,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         iWinner  = i
             ### energy > 4 GeV
             else:
+                histos['hNminus1FitPar1_High_Multiplicity_EGt4_TrackInclusive'].Fill(ddValue[1])
+                histos['hNminus1FitPar2_High_Multiplicity_EGt4_TrackInclusive'].Fill(ddValue[2])
                 if ((0.0 < ddValue[1] < 0.05) and (0.0 < ddValue[2] < 0.01)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
@@ -818,6 +856,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             ### energy < 4 GeV
             if(pSeed.E()) < 4:
+                histos['hNminus1FitPar1_Medium_Multiplicity_ELt4_TrackInclusive'].Fill(ddValue[1])
+                histos['hNminus1FitPar2_Medium_Multiplicity_ELt4_TrackInclusive'].Fill(ddValue[2])
                 if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
@@ -826,6 +866,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         iWinner  = i
             ### energy > 4 GeV
             else:
+                histos['hNminus1FitPar1_Medium_Multiplicity_EGt4_TrackInclusive'].Fill(ddValue[1])
+                histos['hNminus1FitPar2_Medium_Multiplicity_EGt4_TrackInclusive'].Fill(ddValue[2])
                 if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.06)):
                     if ddValue[1] < ddValue1:
                         ddValue0 = ddValue[0]
@@ -839,6 +881,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             if(nMatched == 4):
                 ### energy < 4 GeV
                 if(pSeed.E() < 4):
+                    histos['hNminus1FitPar1_Low_Multiplicity_ELt4_TightTrack'].Fill(ddValue[1])
+                    histos['hNminus1FitPar2_Low_Multiplicity_ELt4_TightTrack'].Fill(ddValue[2])
                     if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
@@ -848,6 +892,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             
                 ### energy > 4 GeV
                 else:
+                    histos['hNminus1FitPar1_Low_Multiplicity_EGt4_TightTrack'].Fill(ddValue[1])
+                    histos['hNminus1FitPar2_Low_Multiplicity_EGt4_TightTrack'].Fill(ddValue[2])
                     if ((0.0 < ddValue[1] < 0.1) and (0.0 < ddValue[2] < 0.1)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
@@ -859,6 +905,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
             else:
                 ### energy < 4 GeV
                 if(pSeed.E() < 4.):
+                    histos['hNminus1FitPar1_Low_Multiplicity_ELt4_LooseTrack'].Fill(ddValue[1])
+                    histos['hNminus1FitPar2_Low_Multiplicity_ELt4_LooseTrack'].Fill(ddValue[2])
                     if ((0.0 < ddValue[1] < 0.2) and (0.0 < ddValue[2] < 0.05)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
@@ -867,6 +915,8 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                             iWinner  = i
                 ### energy > 4 GeV
                 else:
+                    histos['hNminus1FitPar1_Low_Multiplicity_EGt4_LooseTrack'].Fill(ddValue[1])
+                    histos['hNminus1FitPar2_Low_Multiplicity_EGt4_LooseTrack'].Fill(ddValue[2])
                     if ((0.0 < ddValue[1] < 0.065) and (0.0 < ddValue[2] < 0.065)):
                         if ddValue[1] < ddValue1:
                             ddValue0 = ddValue[0]
@@ -913,7 +963,7 @@ def makeseedNoFit(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side):
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     
     
-    if(abs(xDipoleExit) > xDipoleExitMax/2):
+    if(abs(xDipoleExit) > 200.0/2):
         return False, {}
     
 
@@ -971,7 +1021,7 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         return False, {}  # the track should point to |x|<~1.0 at the dipole exit
     cutFlowDict['xDipoleExitLt25'] += 1
     
-    if(abs(xDipoleExit) > xDipoleExitMax/2):
+    if(abs(xDipoleExit) > 200.0/2):
         return False, {}
     cutFlowDict['xDipoleExitGt165'] += 1
 
@@ -996,24 +1046,13 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
     cutFlowDict['checkClusterTracksMiddleLayers'] += 1
     
     
-    passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit)
-    
-    ### add the nMatched and nExpected to the winnerFit dictionary
-    winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected, 'xExit':xExit, 'yExit':yExit, 'passFit':passFit, "pSeedPreFit":p})
-    
-    ### decide when we need fit or not
-    if((useFit==1) and (not passFit)):
-        return False, {}
-    
-    cutFlowDict['checkClusterFit'] += 1
-    
     ### if fit is done, then take the x and z from the fit
-    if(passFit):
-        xDipoleFromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], zDipoleExit)*mm2m
-        xLayer4FromFit = xofz(winnerFit['linepts'][0], winnerFit['linepts'][1], r4[2])*mm2m
+    if(True):
+        xDipoleFromFit = xofz(r1, r4, zDipoleExit)*mm2m
+        xLayer4FromFit = xofz(r1, r4, r4[2])*mm2m
         
-        yDipoleFromFit = yofz(winnerFit['linepts'][0], winnerFit['linepts'][1], zDipoleExit)*mm2m
-        yLayer4FromFit = yofz(winnerFit['linepts'][0], winnerFit['linepts'][1], r4[2])*mm2m
+        yDipoleFromFit = yofz(r1, r4, zDipoleExit)*mm2m
+        yLayer4FromFit = yofz(r1, r4, r4[2])*mm2m
 
         ### here r1 and r4 must be in mm
         R1 = [xDipoleFromFit*m2mm, yDipoleFromFit*m2mm, zDipoleExit]
@@ -1029,10 +1068,6 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         cutFlowDict['trackEnergy'] += 1
         
         
-        ### update the dictionary
-        winnerFit.update({"pSeedPostFit":pSeed})
-        winnerFit["xExit"] = xExit
-        winnerFit["yExit"] = yExit
         
         #### calculate the distance from x4:x_exit analytical line
         d              = Distance(xDipoleFromFit,xLayer4FromFit,r1GeV,r10GeV)
@@ -1051,9 +1086,11 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### medium and high multiplicity
         if(nseedsNoFit > nseedsNoFitMax2):
             if(pSeed.E() < 4.0):
+                histos['hNminus1d_High_Multiplicity_ELt4_TrackInclusive'].Fill(d)
                 if(d > 5*mm2m):
                     return False, {}
             else:
+                histos['hNminus1d_High_Multiplicity_EGt4_TrackInclusive'].Fill(d)
                 if(d > 3*mm2m):
                     return False, {}
             
@@ -1061,16 +1098,20 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
+                    histos['hNminus1d_Medium_Multiplicity_ELt4_TightTrack'].Fill(d)
                     if(d > 6*mm2m):
                         return False, {}
                 else:
+                    histos['hNminus1d_Medium_Multiplicity_EGt4_TightTrack'].Fill(d)
                     if(d > 4*mm2m):
                         return False, {}
             else:
                 if(pSeed.E() < 4.0):
+                    histos['hNminus1d_Medium_Multiplicity_ELt4_LooseTrack'].Fill(d)
                     if(d > 5*mm2m):
                         return False, {}
                 else:
+                    histos['hNminus1d_Medium_Multiplicity_EGt4_LooseTrack'].Fill(d)
                     if(d > 3*mm2m):
                         return False, {}
         ### low multiplicity
@@ -1078,55 +1119,80 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
             ### tight tracks
             if(nMatched == 4):
                 if(pSeed.E() < 4.0):
+                    histos['hNminus1d_Low_Multiplicity_ELt4_TightTrack'].Fill(d)
                     if(d > 6*mm2m):
                         return False, {}
                 else:
+                    histos['hNminus1d_Low_Multiplicity_EGt4_TightTrack'].Fill(d)
                     if(d > 4*mm2m):
                         return False, {}
             ### loose tracks
             else:
                 if(pSeed.E() < 4.0):
+                    histos['hNminus1d_Low_Multiplicity_ELt4_LooseTrack'].Fill(d)
                     if(d > 5*mm2m):
                         return False, {}
                 else:
+                    histos['hNminus1d_Low_Multiplicity_EGt4_LooseTrack'].Fill(d)
                     if(d > 5*mm2m):
                         return False, {}
                 
         cutFlowDict['checkClusterXDistance'] += 1
-        winnerFit.update({"distance":d})
-        
         
         
         
         
         ### checking the track pY
         if(nseedsNoFit > nseedsNoFitMax):
+            histos['hNminus1Py_High_Medium_Multiplicity_EInclusive_TrackInclusive'].Fill(pSeed.Py())
             if(abs(pSeed.Py()) > PseedMax): 
                 return False, {}
         else:
+            
             if(pSeed.E() < 4):
                 if(nMatched == 4):
+                    histos['hNminus1Py_Low_Multiplicity_ELt4_TightTracks'].Fill(pSeed.Py())
                     if(abs(pSeed.Py()) > PseedMax*2): 
                         return False, {}
                 else:
+                    histos['hNminus1Py_Low_Multiplicity_ELt4_LooseTracks'].Fill(pSeed.Py())
                     if(abs(pSeed.Py()) > PseedMax*1.9): 
                         return False, {}
             else:
                 if(nMatched == 4):
+                    histos['hNminus1Py_Low_Multiplicity_EGt4_TightTracks'].Fill(pSeed.Py())
                     if(abs(pSeed.Py()) > PseedMax*7): 
                         return False, {}
                 else:
+                    histos['hNminus1Py_Low_Multiplicity_EGt4_LooseTracks'].Fill(pSeed.Py())
                     if(abs(pSeed.Py()) > PseedMax*6.2): 
                         return False, {}
             
         cutFlowDict['checkClusterTrackPy'] += 1
         
         
-        if(winnerFit['nMatched'] == 4):
-            cutFlowDict['checkClusterTrackPyTight'] += 1
-        else:
-            cutFlowDict['checkClusterTrackPyLoose'] += 1
+        #if(winnerFit['nMatched'] == 4):
+            #cutFlowDict['checkClusterTrackPyTight'] += 1
+        #else:
+            #cutFlowDict['checkClusterTrackPyLoose'] += 1
 
+    
+    
+    
+    
+    passFit, winnerFit = makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMatching, innerR3FromMatching, outerR3FromMatching, nseedsNoFit)
+    
+    ### add the nMatched and nExpected to the winnerFit dictionary
+    winnerFit.update({'nMatched':nMatched, 'nExpected':nExpected, 'xExit':xExit, 'yExit':yExit, 'passFit':passFit, "pSeedPreFit":p})
+    
+    ### decide when we need fit or not
+    if((useFit==1) and (not passFit)):
+        return False, {}
+    
+    winnerFit.update({"distance":d})
+    cutFlowDict['checkClusterFit'] += 1
+    
+    
     return True, winnerFit
 
 ### position of beam
@@ -1144,7 +1210,6 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
 #6426.728110599079, -83.009708737864
 #6620.276497695853, -84.46601941747576
 #6779.262672811059, -87.37864077669906
-
 #### add diagonal vertex cut
 #def checkVtxCut(vtxx, vtxz):
     #if((-45.0 < vtxx <= -25.5 ) and (3800 < vtxz <= 4200)):
@@ -1196,12 +1261,15 @@ def main():
     parser.add_argument('-f', action="store", dest="needFit", type=int, default=1)
     parser.add_argument('-e', action="store", dest="eCut", type=float, default=0.0)
     parser.add_argument('-p', action="store", dest="Particle", type=str, default="Positron")
+    parser.add_argument('-m', action="store", dest="nminus1Str", type=str, default="SVDParNminus1")  ### distancedNminus1, SVDParNminus1
     args = parser.parse_args()
     
     
     for index, row in df.iterrows():
         detid   = row["detid"]
         layerid = row["layerid"]
+        if(layerid > 7):
+            continue
         xMin, xMax = GetSensorXBoundaries(detid, layerid)
         xBoundaries.update({"detid"+str(detid)+"_layerid"+str(layerid):[xMin, xMax]})
     
@@ -1211,6 +1279,7 @@ def main():
     inputTrackInfo  = open(inTextFile)
     energyCutSuffix = "VariableEnergyCut"
     side            = args.Particle
+    Nminu1Suffix    = args.nminus1Str
     
     signalCutSuffix = ""
     if(args.needSignal):
@@ -1226,18 +1295,14 @@ def main():
         
         
     ### open histogram to know the seed information
-    if ("Bkg" in inTextFile):
-        suffixName          = inTextFile.split('.')[0]
-    elif (("_" in inTextFile) and ("hics" in inTextFile)):
+    if (("_" in inTextFile) and ("hics" in inTextFile)):
         eachName            = inTextFile.split('.')[0].split('_')
         suffixName          = "_".join(eachName[2:])
     else:
         suffixName          = inTextFile.split('.')[0]
     
     
-    print("The suffix of the output: ", suffixName)
-    
-    outFile                   = TFile("seedingInformationFiles/seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root", "RECREATE")
+    outFile             = TFile("seedingInformation_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+"_"+Nminu1Suffix+".root", "RECREATE")
     outFile.cd()
     
     hAllPossible              = TH1D("hAllPossible", "all possible track combination; bunch crossing; number of track combination", 9508, 0, 9508)
@@ -1272,19 +1337,12 @@ def main():
     
 
     #### select the number of bunch crossing for different files, BX is useful only for hics setup, 494 BX for 5000 nm new signal, 9508 BX for 3000 nm old signal
-    if 'list_root_hics' in inTextFile:
+    if 'hics' in inTextFile:
         nBX          = 494
         checkBXMatch = True
     ### e-beam only background
-    elif 'EBeamOnlyNewSamples' in inTextFile:
+    elif 'AllBX' in inTextFile:
         nBX          = 160
-        checkBXMatch = True
-    elif 'ePlusLaserBkgNewSamples' in inTextFile:
-        nBX          = 298
-        checkBXMatch = True
-    ### g+laser background
-    elif 'gPlusLaserBkgNewSamples' in inTextFile:
-        nBX          = 299
         checkBXMatch = True
     ### all other cases
     else:
@@ -1319,9 +1377,7 @@ def main():
         if(args.needSignal and not(pdgId==-11 and trackId==1)):
             continue
         failVtxCut = checkVtxCut(vtx_x, vtx_z)
-        ### required to suppress unwanted background
         #if(vtx_x < -25.5 and (vtx_z > 3600 and vtx_z < 4600)): continue
-        ### requires straight line cut defined in checkVtxCut function, suprresses unwanted background
         #if(failVtxCut): continue
         ### ask for variable energy cut, energyAfterCut is in keV
         energyAfterCut = energyAbsorbed(staveId, energyVal, vtx_z)
@@ -1331,7 +1387,6 @@ def main():
             #### bxNumber, trackId, staveId, x, y, E, weight
             position.append([bxNumber, trackId, staveId, xPos, yPos, energyVal, weight])
 
-    allSeedsTrackLines = []
     #### run the seeding algorithm per BX
     for bxCounter in range(1, nBX+1):
         # separate each bx now
@@ -1351,7 +1406,7 @@ def main():
         allR1Outer = []; allR2Outer = []; allR3Outer = []; allR4Outer = []
         
         for values in eachBXValue:
-            ### x, y, z and E, weight, vtx_x, vtx_y, vtx_z
+            ### x, y, z and E
             if(side=="Positron"):
                 if (values[2] == 0):
                     allR1Inner.append([values[3], values[4], z1inner, values[5], values[6]])
@@ -1447,7 +1502,7 @@ def main():
                     seedCounterNoFit += 1
         
         
-        
+        allSeedsTrackLines = []
         for r4 in allR4Unique[:]:
             for r1 in allR1Unique[:]:
                 ### This is the return of makeseed function
@@ -1460,10 +1515,12 @@ def main():
                     ### values which can be obtained even before fitting, but with prefit results
                     hXExitYExit.Fill(winnerDict['xExit'],winnerDict['yExit'])
                     ### select the pSeed depending on the fitting
-                    if winnerDict['passFit']:
-                        pSeedName = "pSeedPostFit"
-                    else:
-                        pSeedName = "pSeedPreFit"
+                    #if winnerDict['passFit']:
+                        #pSeedName = "pSeedPostFit"
+                    #else:
+                        #pSeedName = "pSeedPreFit"
+                        
+                    pSeedName ="pSeedPreFit"
                     
                     hSeedEnergy.Fill(winnerDict[pSeedName].E())
                     hSeedPy.Fill(winnerDict[pSeedName].Py())
@@ -1477,7 +1534,7 @@ def main():
                     ### values which can be obtained only after fitting
                     if winnerDict['passFit']:
                         hSeedDistance.Fill(winnerDict['distance'])
-                        if(winnerDict['nMatched'] == 4 or winnerDict['nMatched'] == 3):allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
+                        allSeedsTrackLines.append(GetExtendedTrackLine([r1, r4]))
                         xDipoleFromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], zDipoleExit)
                         xLayer4FromFit = xofz(winnerDict['linepts'][0], winnerDict['linepts'][1], r4[2])
                         hXLayer4XDipole.Fill(xDipoleFromFit, xLayer4FromFit)
@@ -1534,8 +1591,8 @@ def main():
     for seedTrack in allSeedsTrackLines:
         seedTrack.Draw()
     for sensor in sensors: sensor.Draw()
-    cnv.SaveAs("trackingDiagramsFiles/trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".pdf")
-    cnv.SaveAs("trackingDiagramsFiles/trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root")
+    #cnv.SaveAs("trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".pdf")
+    #cnv.SaveAs("trackingDiagram_"+suffixName+"_"+energyCutSuffix+"_"+signalCutSuffix+"_"+particleSuffix+".root")
     pprint.pprint(cutFlowDict)
 
 
