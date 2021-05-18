@@ -34,9 +34,9 @@ xDipoleExitMax = 330.
 ### cut on nseeds
 nseedsNoFitMax  = 50
 nseedsNoFitMax2 = 320
-nseedsNoFitMax3 = 2000
-nseedsNoFitMax4 = 90000
-nseedsNoFitMax5 = 500000
+nseedsNoFitMax3 = 20000
+nseedsNoFitMax4 = 250000
+nseedsNoFitMax5 = 400000
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
@@ -1085,10 +1085,10 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### high multiplicity
         if(nseedsNoFit > nseedsNoFitMax5):
             if(pSeed.E() < 4.0):
-                if(d > 1.5*mm2m):
+                if(d > 3.0*mm2m):
                     return False, {}
             else:
-                if(d > 1.0*mm2m):
+                if(d > 2.0*mm2m):
                     return False, {}
         elif(nseedsNoFitMax4 < nseedsNoFit <= nseedsNoFitMax5):
             if(pSeed.E() < 4.0):
@@ -1158,17 +1158,17 @@ def makeseed(r1, r4, allR2Inner, allR2Outer, allR3Inner, allR3Outer, side, r1GeV
         ### checking the track pY
         ### high multiplicity
         if(nseedsNoFit > nseedsNoFitMax5):
-            if(abs(pSeed.Py()) > 0.1*PseedMax): 
+            if(abs(pSeed.Py()) > 0.5*PseedMax): 
                 return False, {}
         elif(nseedsNoFitMax4 < nseedsNoFit <= nseedsNoFitMax5):
-            if(abs(pSeed.Py()) > 0.3*PseedMax): 
+            if(abs(pSeed.Py()) > 0.65*PseedMax): 
                 return False, {}
         elif(nseedsNoFitMax3 < nseedsNoFit <= nseedsNoFitMax4):
-            if(abs(pSeed.Py()) > 0.5*PseedMax): 
+            if(abs(pSeed.Py()) > 0.70*PseedMax): 
                 return False, {}
         ### moderate multiplicity
         elif(nseedsNoFitMax2 < nseedsNoFit <= nseedsNoFitMax3):
-            if(abs(pSeed.Py()) > 0.7*PseedMax): 
+            if(abs(pSeed.Py()) > 0.75*PseedMax): 
                 return False, {}
         elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
             if(abs(pSeed.Py()) > PseedMax): 
