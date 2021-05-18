@@ -34,9 +34,9 @@ xDipoleExitMax = 330.
 ### cut on nseeds
 nseedsNoFitMax  = 50
 nseedsNoFitMax2 = 320
-nseedsNoFitMax3 = 200000
-nseedsNoFitMax4 = 9000000
-nseedsNoFitMax5 = 50000000
+nseedsNoFitMax3 = 2000
+nseedsNoFitMax4 = 90000
+nseedsNoFitMax5 = 500000
 
 #//MeV mass of electron/positron
 meMeV    = 0.5109989461 
