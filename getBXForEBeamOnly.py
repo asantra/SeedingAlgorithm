@@ -23,17 +23,18 @@ def main():
             h0Value      = dirAddress.Get("h0")
             eventNumber  = h0Value.GetEntries()
             totalNumber += eventNumber
-            print("totalNumber of electrons: ",totalNumber)
+            #print("totalNumber of electrons: ",totalNumber)
             
-            i = int(totalNumber) // 1500000000
-            print("The division = ", i)
-            outFile1 = open("ePlusLaser_hics_165gev_w0_3000nm_jeti40_122020_9550dac4Jan112021_DividedByBX"+str(i+1)+".txt", "a")
-            outFile1.write(lines+"\n")
+            #i = int(totalNumber) // 1500000000
+            #print("The division = ", i)
+            #outFile1 = open("ePlusLaser_list_root_7671ee4c_DividedByBX"+str(i+1)+".txt", "a")
+            #outFile1.write(lines+"\n")
             
         except:
             print("something wrong here: ", lines)
         
         
+    print("Total number of events: ",totalNumber)
         
             
     outFile1.close()

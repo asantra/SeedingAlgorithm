@@ -3,9 +3,10 @@
 import os, sys
 import subprocess
 from subprocess import call
-import Queue
+from queue import Queue
 import threading
 import multiprocessing
+from multiprocessing import Queue
 import argparse
 from random import seed, randint
 
@@ -19,10 +20,10 @@ def main():
     #args = parser.parse_args()
     
     ## run!
-    q = Queue.Queue()
+    q = Queue()
    
     #command = 'bash runSeeding3Or4Hits.sh'
-    command = 'python3 findSeed.py -l EBeamOnlyNewSamples_DividedByBX15_trackInfoClean.txt -f 1'
+    command = '/usr/local/bin/python3.9 findSeed.py -l BkgEBeam_SignalPositronhics3000nm_jeti40_122020_9550dac4_BX1_SignalTracks2500_trackInfoClean.txt -f 1 -p Positron'
     print(command)
     q.put(command)
 
@@ -53,7 +54,7 @@ def main():
         t.daemon = True
         t.start()
 
-    q.join() # block until all tasks are done
+    #q.join() # block until all tasks are done
 
 if __name__=="__main__":
     main()

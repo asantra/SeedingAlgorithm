@@ -26,13 +26,14 @@ def main():
         #outFileName  = "hybridSVDCutsNumbersUpdated.csv"
         ### high signal multiplicity tracks
         listOfTracks = [250, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500]
-        outFileName  = "hybridSVDCutsNumbersUpdatedELaserHighMultiplicity.csv"
+        outFileName  = "hybridSVDCutsNumbersUpdatedELaserHighMultiplicity19May2020.csv"
     else:
         listOfTracks = [1, 4, 7, 10, 13, 16]
         outFileName  = "hybridSVDCutsNumbersgPlusLaser"+particle+".csv"
         
-    bxList       = [1,2,3,4]
+    bxList       = [1,1,1,1]
     inDirectory  = "." #"LooseSVDanddCuts_December29_2020"
+    nbXList      = [1,1,1,1]
     
     outCSVFile   = open(outFileName, "w")
     suffixToRootFile = "WithFit3or4HitsTracksAndDistanceCut"
@@ -139,11 +140,11 @@ def main():
     
 
     firstTrack = listOfTracks[0]
-    outCSVFile.write(",,,,"+trackList[firstTrack][1]["bkgOnlyInclusive"]+","+trackList[firstTrack][1]["bkgOnlyTight"]+","+trackList[firstTrack][1]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][2]["bkgOnlyInclusive"]+","+trackList[firstTrack][2]["bkgOnlyTight"]+","+trackList[firstTrack][2]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][3]["bkgOnlyInclusive"]+","+trackList[firstTrack][3]["bkgOnlyTight"]+","+trackList[firstTrack][3]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][4]["bkgOnlyInclusive"]+","+trackList[firstTrack][4]["bkgOnlyTight"]+","+trackList[firstTrack][4]["bkgOnlyLoose"]+"\n")
+    outCSVFile.write(",,,,"+trackList[firstTrack][nbXList[0]]["bkgOnlyInclusive"]+","+trackList[firstTrack][nbXList[0]]["bkgOnlyTight"]+","+trackList[firstTrack][nbXList[0]]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][nbXList[1]]["bkgOnlyInclusive"]+","+trackList[firstTrack][nbXList[1]]["bkgOnlyTight"]+","+trackList[firstTrack][nbXList[1]]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][nbXList[2]]["bkgOnlyInclusive"]+","+trackList[firstTrack][nbXList[2]]["bkgOnlyTight"]+","+trackList[firstTrack][nbXList[2]]["bkgOnlyLoose"]+",,,,"+trackList[firstTrack][nbXList[3]]["bkgOnlyInclusive"]+","+trackList[firstTrack][nbXList[3]]["bkgOnlyTight"]+","+trackList[firstTrack][nbXList[3]]["bkgOnlyLoose"]+"\n")
     
     for tracks in listOfTracks:
         #print trackList[tracks][1][0], " ", trackList[tracks][1][1], " ", trackList[tracks][1][2], " ", trackList[tracks][1][3]
-        outCSVFile.write(trackList[tracks][1]["trueSignal"]+","+trackList[tracks][1]["signalOnlyInclusive"]+","+trackList[tracks][1]["signalOnlyTight"]+","+trackList[tracks][1]["signalOnlyLoose"]+","+trackList[tracks][1]["combinedInclusive"]+","+trackList[tracks][1]["combinedTight"]+","+trackList[tracks][1]["combinedLoose"]+","+trackList[tracks][2]["trueSignal"]+","+trackList[tracks][2]["signalOnlyInclusive"]+","+trackList[tracks][2]["signalOnlyTight"]+","+trackList[tracks][2]["signalOnlyLoose"]+","+trackList[tracks][2]["combinedInclusive"]+","+trackList[tracks][2]["combinedTight"]+","+trackList[tracks][2]["combinedLoose"]+","+trackList[tracks][3]["trueSignal"]+","+trackList[tracks][3]["signalOnlyInclusive"]+","+trackList[tracks][3]["signalOnlyTight"]+","+trackList[tracks][3]["signalOnlyLoose"]+","+trackList[tracks][3]["combinedInclusive"]+","+trackList[tracks][3]["combinedTight"]+","+trackList[tracks][3]["combinedLoose"]+","+trackList[tracks][4]["trueSignal"]+","+trackList[tracks][4]["signalOnlyInclusive"]+","+trackList[tracks][4]["signalOnlyTight"]+","+trackList[tracks][4]["signalOnlyLoose"]+","+trackList[tracks][4]["combinedInclusive"]+","+trackList[tracks][4]["combinedTight"]+","+trackList[tracks][4]["combinedLoose"]+",,,"+trackList[tracks]["prelimSeedBkg"]+",,,"+trackList[tracks]["prelimSeedCombined"]+",,,"+trackList[tracks]["prelimSeedSignal"]+"\n")
+        outCSVFile.write(trackList[tracks][nbXList[0]]["trueSignal"]+","+trackList[tracks][nbXList[0]]["signalOnlyInclusive"]+","+trackList[tracks][nbXList[0]]["signalOnlyTight"]+","+trackList[tracks][nbXList[0]]["signalOnlyLoose"]+","+trackList[tracks][nbXList[0]]["combinedInclusive"]+","+trackList[tracks][nbXList[0]]["combinedTight"]+","+trackList[tracks][nbXList[0]]["combinedLoose"]+","+trackList[tracks][nbXList[1]]["trueSignal"]+","+trackList[tracks][nbXList[1]]["signalOnlyInclusive"]+","+trackList[tracks][nbXList[1]]["signalOnlyTight"]+","+trackList[tracks][nbXList[1]]["signalOnlyLoose"]+","+trackList[tracks][nbXList[1]]["combinedInclusive"]+","+trackList[tracks][nbXList[1]]["combinedTight"]+","+trackList[tracks][nbXList[1]]["combinedLoose"]+","+trackList[tracks][nbXList[2]]["trueSignal"]+","+trackList[tracks][nbXList[2]]["signalOnlyInclusive"]+","+trackList[tracks][nbXList[2]]["signalOnlyTight"]+","+trackList[tracks][nbXList[2]]["signalOnlyLoose"]+","+trackList[tracks][nbXList[2]]["combinedInclusive"]+","+trackList[tracks][nbXList[2]]["combinedTight"]+","+trackList[tracks][nbXList[2]]["combinedLoose"]+","+trackList[tracks][nbXList[3]]["trueSignal"]+","+trackList[tracks][nbXList[3]]["signalOnlyInclusive"]+","+trackList[tracks][nbXList[3]]["signalOnlyTight"]+","+trackList[tracks][nbXList[3]]["signalOnlyLoose"]+","+trackList[tracks][nbXList[3]]["combinedInclusive"]+","+trackList[tracks][nbXList[3]]["combinedTight"]+","+trackList[tracks][nbXList[3]]["combinedLoose"]+",,,"+trackList[tracks]["prelimSeedBkg"]+",,,"+trackList[tracks]["prelimSeedCombined"]+",,,"+trackList[tracks]["prelimSeedSignal"]+"\n")
     
     
     outCSVFile.close()

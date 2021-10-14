@@ -68,7 +68,7 @@ def energyBins(nbins):
 def main():
     
     parser = argparse.ArgumentParser(description='Code to get 2D plots')
-    parser.add_argument('-l', action="store", dest="inFile", type=str, default="ePlusLaserBkgNewSamplesJan242021_AllBX_trackInfoClean.txt")
+    parser.add_argument('-l', action="store", dest="inFile", type=str, default="ePlusLaserBackground_list_root_7671ee4c_First3BX_trackInfo.txt")
     args = parser.parse_args()
     
     inDir = '/Users/arkasantra/arka/Sasha_Work/OutputFile'
@@ -91,13 +91,14 @@ def main():
         nbx = 141.38
     elif 'ePlusLaserKaptonWindow' in args.inFile:
         nbx = 278.0
-    
+    elif 'ePlusLaserBackground' in args.inFile:
+        nbx = 2.13
     else:
         nbx = 1.0
     
     print('BX selected: ',nbx)
     
-    outFile       = TFile(rootFile, "RECREATE")
+    outFile       = TFile(inDir+'/'+rootFile, "RECREATE")
     outFile.cd()
     nbins  = 450
     xbins  = energyBins(nbins)
@@ -112,9 +113,9 @@ def main():
         allHistoDict.update({"tracking_planes_background_track_x_gamma_sumE_"+str(i):TH1D("tracking_planes_background_track_x_gamma_sumE_"+str(i),"tracking_planes_background_track_x_gamma_sumE_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_x_gamma_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_gamma_1GeVCut_"+str(i),"tracking_planes_background_track_x_gamma_1GeVCut_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_e_gamma_log_"+str(i):TH1D("tracking_planes_background_track_e_gamma_log_"+str(i),"tracking_planes_background_track_e_gamma_log_"+str(i),nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i),"tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i),2000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i),"tracking_planes_background_vtx_z_track_e_gamma_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
         allHistoDict.update({"tracking_planes_background_vtx_x_track_e_gamma_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_gamma_log_"+str(i),"tracking_planes_background_vtx_x_track_e_gamma_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_gamma_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_gamma_"+str(i), "tracking_planes_background_vtxz_vtxx_gamma_"+str(i), 2000, -5000, 15000, 6000, -3000, 3000)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_gamma_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_gamma_"+str(i), "tracking_planes_background_vtxz_vtxx_gamma_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
         
         
                              
@@ -123,9 +124,9 @@ def main():
         allHistoDict.update({"tracking_planes_background_track_x_positrons_sumE_"+str(i):TH1D("tracking_planes_background_track_x_positrons_sumE_"+str(i),"tracking_planes_background_track_x_positrons_sumE_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_x_positrons_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_positrons_1GeVCut_"+str(i),"tracking_planes_background_track_x_positrons_1GeVCut_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_e_positrons_log_"+str(i):TH1D("tracking_planes_background_track_e_positrons_log_"+str(i),"tracking_planes_background_track_e_positrons_log_"+str(i),nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i),2000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_positrons_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
         allHistoDict.update({"tracking_planes_background_vtx_x_track_e_positrons_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_positrons_log_"+str(i),"tracking_planes_background_vtx_x_track_e_positrons_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_positrons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_positrons_"+str(i), "tracking_planes_background_vtxz_vtxx_positrons_"+str(i), 2000, -5000, 15000, 6000, -3000, 3000)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_positrons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_positrons_"+str(i), "tracking_planes_background_vtxz_vtxx_positrons_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
         
         
         #### electrons
@@ -133,9 +134,66 @@ def main():
         allHistoDict.update({"tracking_planes_background_track_x_electrons_sumE_"+str(i):TH1D("tracking_planes_background_track_x_electrons_sumE_"+str(i),"tracking_planes_background_track_x_electrons_sumE_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_x_electrons_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_electrons_1GeVCut_"+str(i),"tracking_planes_background_track_x_electrons_1GeVCut_"+str(i),1300, -650.0, 650.0)})
         allHistoDict.update({"tracking_planes_background_track_e_electrons_log_"+str(i):TH1D("tracking_planes_background_track_e_electrons_log_"+str(i),"tracking_planes_background_track_e_electrons_log_"+str(i),nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i),2000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_electrons_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
         allHistoDict.update({"tracking_planes_background_vtx_x_track_e_electrons_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_electrons_log_"+str(i),"tracking_planes_background_vtx_x_track_e_electrons_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
-        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_electrons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_electrons_"+str(i), "tracking_planes_background_vtxz_vtxx_electrons_"+str(i), 2000, -5000, 15000, 6000, -3000, 3000)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_electrons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_electrons_"+str(i), "tracking_planes_background_vtxz_vtxx_electrons_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
+        
+        
+        
+        #### protons
+        allHistoDict.update({"tracking_planes_background_track_x_protons_"+str(i):TH1D("tracking_planes_background_track_x_protons_"+str(i),"tracking_planes_background_track_x_protons_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_protons_sumE_"+str(i):TH1D("tracking_planes_background_track_x_protons_sumE_"+str(i),"tracking_planes_background_track_x_protons_sumE_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_protons_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_protons_1GeVCut_"+str(i),"tracking_planes_background_track_x_protons_1GeVCut_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_e_protons_log_"+str(i):TH1D("tracking_planes_background_track_e_protons_log_"+str(i),"tracking_planes_background_track_e_protons_log_"+str(i),nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_protons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_protons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_protons_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_x_track_e_protons_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_protons_log_"+str(i),"tracking_planes_background_vtx_x_track_e_protons_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_protons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_protons_"+str(i), "tracking_planes_background_vtxz_vtxx_protons_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
+        
+        
+        
+        #### neutrons
+        allHistoDict.update({"tracking_planes_background_track_x_neutrons_"+str(i):TH1D("tracking_planes_background_track_x_neutrons_"+str(i),"tracking_planes_background_track_x_neutrons_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_neutrons_sumE_"+str(i):TH1D("tracking_planes_background_track_x_neutrons_sumE_"+str(i),"tracking_planes_background_track_x_neutrons_sumE_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_neutrons_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_neutrons_1GeVCut_"+str(i),"tracking_planes_background_track_x_neutrons_1GeVCut_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_e_neutrons_log_"+str(i):TH1D("tracking_planes_background_track_e_neutrons_log_"+str(i),"tracking_planes_background_track_e_neutrons_log_"+str(i),nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_neutrons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_neutrons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_neutrons_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_x_track_e_neutrons_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_neutrons_log_"+str(i),"tracking_planes_background_vtx_x_track_e_neutrons_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_neutrons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_neutrons_"+str(i), "tracking_planes_background_vtxz_vtxx_neutrons_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
+        
+        
+        
+        
+        #### muons
+        allHistoDict.update({"tracking_planes_background_track_x_muons_"+str(i):TH1D("tracking_planes_background_track_x_muons_"+str(i),"tracking_planes_background_track_x_muons_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_muons_sumE_"+str(i):TH1D("tracking_planes_background_track_x_muons_sumE_"+str(i),"tracking_planes_background_track_x_muons_sumE_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_muons_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_muons_1GeVCut_"+str(i),"tracking_planes_background_track_x_muons_1GeVCut_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_e_muons_log_"+str(i):TH1D("tracking_planes_background_track_e_muons_log_"+str(i),"tracking_planes_background_track_e_muons_log_"+str(i),nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_muons_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_muons_log_"+str(i),"tracking_planes_background_vtx_z_track_e_muons_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_x_track_e_muons_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_muons_log_"+str(i),"tracking_planes_background_vtx_x_track_e_muons_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_muons_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_muons_"+str(i), "tracking_planes_background_vtxz_vtxx_muons_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
+        
+        
+        
+        
+        #### pions
+        allHistoDict.update({"tracking_planes_background_track_x_pions_"+str(i):TH1D("tracking_planes_background_track_x_pions_"+str(i),"tracking_planes_background_track_x_pions_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_pions_sumE_"+str(i):TH1D("tracking_planes_background_track_x_pions_sumE_"+str(i),"tracking_planes_background_track_x_pions_sumE_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_pions_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_pions_1GeVCut_"+str(i),"tracking_planes_background_track_x_pions_1GeVCut_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_e_pions_log_"+str(i):TH1D("tracking_planes_background_track_e_pions_log_"+str(i),"tracking_planes_background_track_e_pions_log_"+str(i),nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_pions_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_pions_log_"+str(i),"tracking_planes_background_vtx_z_track_e_pions_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_x_track_e_pions_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_pions_log_"+str(i),"tracking_planes_background_vtx_x_track_e_pions_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_pions_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_pions_"+str(i), "tracking_planes_background_vtxz_vtxx_pions_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
+        
+        
+        
+        #### pions 0
+        allHistoDict.update({"tracking_planes_background_track_x_pi0_"+str(i):TH1D("tracking_planes_background_track_x_pi0_"+str(i),"tracking_planes_background_track_x_pi0_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_pi0_sumE_"+str(i):TH1D("tracking_planes_background_track_x_pi0_sumE_"+str(i),"tracking_planes_background_track_x_pi0_sumE_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_x_pi0_1GeVCut_"+str(i):TH1D("tracking_planes_background_track_x_pi0_1GeVCut_"+str(i),"tracking_planes_background_track_x_pi0_1GeVCut_"+str(i),1300, -650.0, 650.0)})
+        allHistoDict.update({"tracking_planes_background_track_e_pi0_log_"+str(i):TH1D("tracking_planes_background_track_e_pi0_log_"+str(i),"tracking_planes_background_track_e_pi0_log_"+str(i),nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_z_track_e_pi0_log_"+str(i):TH2D("tracking_planes_background_vtx_z_track_e_pi0_log_"+str(i),"tracking_planes_background_vtx_z_track_e_pi0_log_"+str(i),4000, -5000, 15000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtx_x_track_e_pi0_log_"+str(i):TH2D("tracking_planes_background_vtx_x_track_e_pi0_log_"+str(i),"tracking_planes_background_vtx_x_track_e_pi0_log_"+str(i),6000, -3000, 3000, nbins+1, xarray)})
+        allHistoDict.update({"tracking_planes_background_vtxz_vtxx_pi0_"+str(i):TH2D("tracking_planes_background_vtxz_vtxx_pi0_"+str(i), "tracking_planes_background_vtxz_vtxx_pi0_"+str(i), 4000, -5000, 15000, 6000, -3000, 3000)})
     
     
     
@@ -164,7 +222,7 @@ def main():
         failVtxCut = checkVtxCut(vtx_x, vtx_z)
         #if(vtx_x < -25.5 and (vtx_z > 3600 and vtx_z < 4600)): continue
         #if(failVtxCut): continue
-    
+        ###electrons
         if(pdgId == 11 and trackId!=1):
             allHistoDict["tracking_planes_background_track_x_electrons_"+str(staveId)].Fill(xPos, weight)
             if(energyVal>1.0):
@@ -175,7 +233,68 @@ def main():
             allHistoDict["tracking_planes_background_vtx_z_track_e_electrons_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
             allHistoDict["tracking_planes_background_vtx_x_track_e_electrons_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
             allHistoDict["tracking_planes_background_vtxz_vtxx_electrons_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+        
+        ###protons and anti-protons
+        if((pdgId == 2212 or pdgId == -2212) and trackId!=1):
+            allHistoDict["tracking_planes_background_track_x_protons_"+str(staveId)].Fill(xPos, weight)
+            if(energyVal>1.0):
+                allHistoDict["tracking_planes_background_track_x_protons_1GeVCut_"+str(staveId)].Fill(xPos, weight)
+            allHistoDict["tracking_planes_background_track_x_protons_sumE_"+str(staveId)].Fill(xPos, energyVal*weight)
             
+            allHistoDict["tracking_planes_background_track_e_protons_log_"+str(staveId)].Fill(energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_z_track_e_protons_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_x_track_e_protons_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtxz_vtxx_protons_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+            
+        ### neutrons
+        if(pdgId == 2112 and trackId!=1):
+            allHistoDict["tracking_planes_background_track_x_neutrons_"+str(staveId)].Fill(xPos, weight)
+            if(energyVal>1.0):
+                allHistoDict["tracking_planes_background_track_x_neutrons_1GeVCut_"+str(staveId)].Fill(xPos, weight)
+            allHistoDict["tracking_planes_background_track_x_neutrons_sumE_"+str(staveId)].Fill(xPos, energyVal*weight)
+            
+            allHistoDict["tracking_planes_background_track_e_neutrons_log_"+str(staveId)].Fill(energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_z_track_e_neutrons_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_x_track_e_neutrons_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtxz_vtxx_neutrons_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+            
+        ### muons and anti-muons
+        if((pdgId == 13 or pdgId == -13) and trackId!=1):
+            allHistoDict["tracking_planes_background_track_x_muons_"+str(staveId)].Fill(xPos, weight)
+            if(energyVal>1.0):
+                allHistoDict["tracking_planes_background_track_x_muons_1GeVCut_"+str(staveId)].Fill(xPos, weight)
+            allHistoDict["tracking_planes_background_track_x_muons_sumE_"+str(staveId)].Fill(xPos, energyVal*weight)
+            
+            allHistoDict["tracking_planes_background_track_e_muons_log_"+str(staveId)].Fill(energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_z_track_e_muons_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_x_track_e_muons_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtxz_vtxx_muons_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+            
+        ### pi+ or pi-
+        if((pdgId == 211 or pdgId == -211) and trackId!=1):
+            allHistoDict["tracking_planes_background_track_x_pions_"+str(staveId)].Fill(xPos, weight)
+            if(energyVal>1.0):
+                allHistoDict["tracking_planes_background_track_x_pions_1GeVCut_"+str(staveId)].Fill(xPos, weight)
+            allHistoDict["tracking_planes_background_track_x_pions_sumE_"+str(staveId)].Fill(xPos, energyVal*weight)
+            
+            allHistoDict["tracking_planes_background_track_e_pions_log_"+str(staveId)].Fill(energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_z_track_e_pions_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_x_track_e_pions_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtxz_vtxx_pions_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+            
+        ### pi0
+        if((pdgId == 111 or pdgId == -111) and trackId!=1):
+            allHistoDict["tracking_planes_background_track_x_pi0_"+str(staveId)].Fill(xPos, weight)
+            if(energyVal>1.0):
+                allHistoDict["tracking_planes_background_track_x_pi0_1GeVCut_"+str(staveId)].Fill(xPos, weight)
+            allHistoDict["tracking_planes_background_track_x_pi0_sumE_"+str(staveId)].Fill(xPos, energyVal*weight)
+            
+            allHistoDict["tracking_planes_background_track_e_pi0_log_"+str(staveId)].Fill(energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_z_track_e_pi0_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtx_x_track_e_pi0_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
+            allHistoDict["tracking_planes_background_vtxz_vtxx_pi0_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
+            
+        ### positrons
         if(pdgId == -11 and trackId!=1):
             allHistoDict["tracking_planes_background_track_x_positrons_"+str(staveId)].Fill(xPos, weight)
             if(energyVal>1.0):
@@ -186,6 +305,8 @@ def main():
             allHistoDict["tracking_planes_background_vtx_x_track_e_positrons_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
             allHistoDict["tracking_planes_background_vtxz_vtxx_positrons_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
             
+            
+        ### photon
         if(pdgId == 22 and trackId!=1):
             allHistoDict["tracking_planes_background_track_x_gamma_"+str(staveId)].Fill(xPos, weight)
             if(energyVal>1.0):
@@ -195,7 +316,6 @@ def main():
             allHistoDict["tracking_planes_background_vtx_z_track_e_gamma_log_"+str(staveId)].Fill(vtx_z, energyVal, weight)
             allHistoDict["tracking_planes_background_vtx_x_track_e_gamma_log_"+str(staveId)].Fill(vtx_x, energyVal, weight)
             allHistoDict["tracking_planes_background_vtxz_vtxx_gamma_"+str(staveId)].Fill(vtx_z, vtx_x, weight)
-            
         
         
     for keys in allHistoDict:
