@@ -765,7 +765,6 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
     ddValue2 = 1e11
     ### the index of the best matched track
     iWinner = -1
-    #print("ddList:", allDDList)
     for i in range(len(allDDList['dd'])):
         ### calculate the seed energy
         xDipoleFromFit = xofz(allDDList['linepts'][i][0], allDDList['linepts'][i][1], zDipoleExit)*mm2m
@@ -783,7 +782,6 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
         
         
         ddValue = allDDList['dd'][i]
-        #print("ddValue1", ddValue)
         histos['hSVDValues2Global'].Fill(ddValue[1])
         histos['hSVDValues3Global'].Fill(ddValue[2])
         if(nMatched==4):
@@ -848,24 +846,24 @@ def makeSeedFit(r1, r4, nMatched, nExpected, innerR2FromMatching, outerR2FromMat
                         ddValue2 = ddValue[2]
                         iWinner  = i
                         
-        #### medium multiplicity
-        elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
-            ### energy < 4 GeV
-            if(pSeed.E()) < 4:
-                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
-                    if ddValue[1] < ddValue1:
-                        ddValue0 = ddValue[0]
-                        ddValue1 = ddValue[1] 
-                        ddValue2 = ddValue[2]
-                        iWinner  = i
-            ### energy > 4 GeV
-            else:
-                if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.06)):
-                    if ddValue[1] < ddValue1:
-                        ddValue0 = ddValue[0]
-                        ddValue1 = ddValue[1] 
-                        ddValue2 = ddValue[2]
-                        iWinner  = i
+        ##### medium multiplicity
+        #elif(nseedsNoFitMax < nseedsNoFit <= nseedsNoFitMax2):
+            #### energy < 4 GeV
+            #if(pSeed.E()) < 4:
+                #if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.05)):
+                    #if ddValue[1] < ddValue1:
+                        #ddValue0 = ddValue[0]
+                        #ddValue1 = ddValue[1] 
+                        #ddValue2 = ddValue[2]
+                        #iWinner  = i
+            #### energy > 4 GeV
+            #else:
+                #if ((0.0 < ddValue[1] < 0.06) and (0.0 < ddValue[2] < 0.06)):
+                    #if ddValue[1] < ddValue1:
+                        #ddValue0 = ddValue[0]
+                        #ddValue1 = ddValue[1] 
+                        #ddValue2 = ddValue[2]
+                        #iWinner  = i
                         
         ### low multiplicity
         else:

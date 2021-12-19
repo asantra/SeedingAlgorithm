@@ -17,18 +17,19 @@ def main():
         lines        = lines.rstrip()
         if('#' in lines): continue
         print("I am working on: ",lines)
-        rootFile     = TFile(lines, "READ")
+        
         try:
+            rootFile     = TFile(lines, "READ")
             dirAddress   = gDirectory.Get("hist")
             h0Value      = dirAddress.Get("h0")
             eventNumber  = h0Value.GetEntries()
             totalNumber += eventNumber
             #print("totalNumber of electrons: ",totalNumber)
             
-            #i = int(totalNumber) // 1500000000
-            #print("The division = ", i)
-            #outFile1 = open("ePlusLaser_list_root_7671ee4c_DividedByBX"+str(i+1)+".txt", "a")
-            #outFile1.write(lines+"\n")
+            i = int(totalNumber) // 1500000000
+            print("The division = ", i)
+            outFile1 = open("gPlusLaser_list_root_55ae8938_DividedByBX"+str(i+1)+".txt", "a")
+            outFile1.write(lines+"\n")
             
         except:
             print("something wrong here: ", lines)

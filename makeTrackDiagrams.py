@@ -117,11 +117,11 @@ def GetSensorXY(detid,layerid):
    y = row["translation_y"].tolist()[0]
    return x,y
    
-def GetSensorSize(detid,layerid,axis):
-   row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
-   # print("row=",row)
-   size = row["size_x"].tolist()[0] if(axis=="x") else row["size_y"].tolist()[0]
-   return size
+#def GetSensorSize(detid,layerid,axis):
+   #row = df[ (df['detid']==detid) & (df['layerid']==layerid) ]
+   ## print("row=",row)
+   #size = row["size_x"].tolist()[0] if(axis=="x") else row["size_y"].tolist()[0]
+   #return size
 
 def GetDipole(color=ROOT.kBlack):
    xarr = array.array('d', [-xDipoleWidth/2,-xDipoleWidth/2,+xDipoleWidth/2,+xDipoleWidth/2,-xDipoleWidth/2])
